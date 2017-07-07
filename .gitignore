@@ -11,8 +11,6 @@
 
 *.html
 
-js/bootstrap.min.js
-
 js/custom.js
 
 *.less
