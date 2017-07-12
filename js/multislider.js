@@ -360,7 +360,7 @@
                     }
                 );
             });
-        }
+        } 
         return $multislider;
     }
 })(jQuery);
