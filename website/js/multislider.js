@@ -246,7 +246,7 @@
         // determine how many slides need to be moved over, if slideAll is true
         function calcNumSlidesToMove(){
             totalWidth = $msContent.width();						          // total width of .MS-content containing all visible slides
-		    numberVisibleSlides = Math.floor(totalWidth/animateDistance);     // number of (visible) slides needed to be moved in each animation
+		    numberVisibleSlides = Math.round(totalWidth/animateDistance);     // number of (visible) slides needed to be moved in each animation
         }
 
 
@@ -360,7 +360,7 @@
                     }
                 );
             });
-        } 
+        }
         return $multislider;
     }
 })(jQuery);

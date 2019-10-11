@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>MultiSlider</title>
+
+    <!-- CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="css/styles.css" rel="stylesheet">
+    <!-- favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="images/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16x16.png">
+    <link rel="icon" type="image/png" href="images/favicon.ico">
+
+  </head>
+  <body class="container">
+      <h1 class="text-center">Multislider</h1>
+      <h3 class="text-center text-muted">A responsive, jQuery powered, multi-slideshow.</h3>
+      <a type="button" id="download-button" class="center-block btn btn-success" download="multislider.zip" href="multislider.zip" style="max-width: 100px;">Download</a>
+
+      <section class="examples">
+          <!-- SINGLE SLIDE -->
+          <div class="row exampleRow">
+        	<div class="col-xs-12">
+        		<h3 class="exampleblogTitle">Single Slide</h3>
+        		<div id="exampleSlider1" class="exampleSlider">
+        			<div class="MS-content">
+                        <div class="item">
+        					<p>Item<br>1</p>
+        				</div>
+                        <div class="item">
+        					<p>Item<br>2</p>
+        				</div>
+                        <div class="item">
+        					<p>Item<br>3</p>
+        				</div>
+                        <div class="item">
+        					<p>Item<br>4</p>
+        				</div>
+                        <div class="item">
+        					<p>Item<br>5</p>
+        				</div>
+                        <div class="item">
+        					<p>Item<br>6</p>
+        				</div>
+                        <div class="item">
+        					<p>Item<br>7</p>
+        				</div>
+                        <div class="item">
+        					<p>Item<br>8</p>
+        				</div>
+                        <div class="item">
+        					<p>Item<br>9</p>
+        				</div>
+                        <div class="item">
+        					<p>Item<br>10</p>
+        				</div>
+                    </div>
+        			<div class="MS-controls">
+        				<button class="MS-left"><i class="fa fa-chevron-left" aria-hidden="true"></i></button>
+        				<button class="MS-right"><i class="fa fa-chevron-right" aria-hidden="true"></i></button>
+        			</div>
+        		</div><!-- #exampleSlider -->
+        	</div>
+          </div>
+
+          <!-- ALL SLIDE -->
+          <div class="row exampleRow">
+           <div class="col-xs-12">
+               <h3 class="exampleblogTitle">All Slide</h3>
+               <div id="exampleSlider2" class="exampleSlider">
+                   <div class="MS-content">
+                        <div class="item">
+                           <p>Item<br>1</p>
+                       </div>
+                        <div class="item">
+                           <p>Item<br>2</p>
+                       </div>
+                        <div class="item">
+                           <p>Item<br>3</p>
+                       </div>
+                        <div class="item">
+                           <p>Item<br>4</p>
+                       </div>
+                        <div class="item">
+                           <p>Item<br>5</p>
+                       </div>
+                        <div class="item">
+                           <p>Item<br>6</p>
+                       </div>
+                        <div class="item">
+                           <p>Item<br>7</p>
+                       </div>
+                        <div class="item">
+                           <p>Item<br>8</p>
+                       </div>
+                        <div class="item">
+                           <p>Item<br>9</p>
+                       </div>
+                        <div class="item">
+                           <p>Item<br>10</p>
+                       </div>
+                    </div>
+                   <div class="MS-controls">
+                       <button class="MS-left"><i class="fa fa-chevron-left" aria-hidden="true"></i></button>
+                       <button class="MS-right"><i class="fa fa-chevron-right" aria-hidden="true"></i></button>
+                   </div>
+               </div><!-- #exampleSlider -->
+           </div>
+          </div>
+
+          <!-- CONTINUOUS -->
+          <div class="row exampleRow">
+       <div class="col-xs-12">
+           <h3 class="exampleblogTitle">Continuous</h3>
+           <div id="exampleSlider3" class="exampleSlider">
+               <div class="MS-content">
+                    <div class="item">
+                       <p>Item<br>1</p>
+                   </div>
+                    <div class="item">
+                       <p>Item<br>2</p>
+                   </div>
+                    <div class="item">
+                       <p>Item<br>3</p>
+                   </div>
+                    <div class="item">
+                       <p>Item<br>4</p>
+                   </div>
+                    <div class="item">
+                       <p>Item<br>5</p>
+                   </div>
+                    <div class="item">
+                       <p>Item<br>6</p>
+                   </div>
+                    <div class="item">
+                       <p>Item<br>7</p>
+                   </div>
+                    <div class="item">
+                       <p>Item<br>8</p>
+                   </div>
+                    <div class="item">
+                       <p>Item<br>9</p>
+                   </div>
+                    <div class="item">
+                       <p>Item<br>10</p>
+                   </div>
+                </div>
+               <div class="MS-controls">
+                   <button class="MS-left"><i class="fa fa-chevron-left" aria-hidden="true"></i></button>
+                   <button class="MS-right"><i class="fa fa-chevron-right" aria-hidden="true"></i></button>
+               </div>
+           </div><!-- #exampleSlider -->
+       </div>
+      </div>
+      </section>
+
+      <section class="row documentation">
+        <!-- SIDE NAV -->
+        <div class="col-md-2 col-md-push-10 hidden-sm hidden-xs">
+            <div id="sideNav" data-spy="affix" data-offset-top="665">
+                <ul>
+                    <li>
+                        <a href="https://github.com/TJBlackman/Multislider" target="_blank">GitHub</a>
+                    </li>
+                    <br/>
+                    <li>
+                        <a href="#about">About</a>
+                    </li>
+                    <li>
+                        <a href="#markup">Markup</a>
+                    </li>
+                    <li>
+                        <a href="#css">CSS / LESS</a>
+                    </li>
+                    <li>
+                        <a href="#jquery">jQuery</a>
+                    </li>
+                    <li>
+                        <a href="#options">Options</a>
+                    </li>
+                    <li>
+                        <a href="#methods">Methods</a>
+                    </li>
+                    <li>
+                        <a href="#events">Events</a>
+                    </li>
+                    <br />
+                    <li>
+                        <a href="#examples">Examples</a>
+                    </li>
+                    <li>
+                        <a href="#">Back to top</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="col-md-10 col-md-pull-2" >
+
+            <!-- INTRO -->
+            <div class="row">
+                <h2 id="about">About</h2>
+                <p>Multislider is a jQuery powered slideshow that specializes in showing more than one slide at a time. There's no need to find messy CSS and JS work arounds for other single-slide solutions. Multislider allows the developer to focus fully on each individual slide as it's own component, and then displays as many slides as you decide in a manner that is fluid, consistent, and dymanic.</p>
+                <p class="text-muted">*Requires jQuery</p>
+            </div>
+
+            <!-- MARKUP -->
+            <div class="row">
+                <h2 id="markup">Markup</h2>
+                <p>The slideshow has just four components:</p>
+                <table class="table">
+                    <tr>
+                        <td>1</td>
+                        <td>Main Wrapper</td>
+                        <td><span>A basic html wrapper element. Helps prevent overlap of other elements, and positioning internal slideshow elements. When given an id, slideshow styles can easily begin from this point and manage the entire multislider. In the examples above, this is shown with a black border.</span></td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>Content Area</td>
+                        <td>This is the area that displays the slides. It determines the size of the slides, and can allow for space on either side for navigation arrows. Represented by the red border in the examples above.</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>Individual Slides</td>
+                        <td>Each slide is a simple <code>&lt;div class="item"&gt;&lt;/div&gt;</code>, and comes with a default style <code>position: relative;</code> The developer can then add any custom content, and easily position it within each slide. Shown with a green border in examples above.</td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td>Navigation</td>
+                        <td>This pluggin looks for navigation buttons, specified with the class <code>".MS-right"</code> and <code>".MS-left"</code>. The above examples use FontAwesome icons for the left/right arrows.</td>
+                    </tr>
+                </table>
+                <div class="panel panel-default">
+                  <div class="panel-heading">
+                    <h3 class="panel-title">Example:</h3>
+                  </div>
+                  <div class="panel-body">
+                      <code>
+                      &lt;div id="exampleSlider"&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">&lt;!-- Give wrapper ID to target with jQuery &amp; CSS --&gt;</span><br>
+                          &nbsp;&nbsp;&nbsp;&nbsp;&lt;div class="MS-content"&gt;<br>
+                              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;div class="item"&gt;&nbsp;Item 1&nbsp;&lt;/div&gt;<br>
+                              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;div class="item"&gt;&nbsp;Item 2&nbsp;&lt;/div&gt;<br>
+                              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;div class="item"&gt;&nbsp;Item 3&nbsp;&lt;/div&gt;<br>
+                          &nbsp;&nbsp;&nbsp;&nbsp;&lt;/div&gt;<br>
+                          &nbsp;&nbsp;&nbsp;&nbsp;&lt;div class="MS-controls"&gt;<br>
+                              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;button class="MS-left"&gt;&lt;i class="fa fa-chevron-left" aria-hidden="true"&gt;&lt;/i&gt;&lt;/button&gt;<br>
+                              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;button class="MS-right"&gt;&lt;i class="fa fa-chevron-right" aria-hidden="true"&gt;&lt;/i&gt;&lt;/button&gt;<br>
+                          &nbsp;&nbsp;&nbsp;&nbsp;&lt;/div&gt;<br>
+                      &lt;/div&gt;
+                          </code>
+                  </div>
+                </div>
+            </div>
+
+            <!-- CSS -->
+            <div class="row css-row">
+                <h2 id="css">CSS</h2>
+                <p>The number of visible slides is controlled through CSS. Slides only show up in the content area, so simply divide the full width (100%) by the number of slides you want to show. For example:</p>
+                <div class="panel panel-default">
+                  <div class="panel-body">
+                      <div class="col-lg-3 col-md-4 col-sm-5">
+                          <code>
+                              .item { width: 20%; }<br />
+                              .item { width: 33.333%; }<br />
+                              .item { width: 50%; }<br />
+                          </code>
+                      </div>
+                      <div class="col-lg-9 col-md-8 col-sm-7 hidden-xs">
+                          <code>
+                              <span class="comment">/* show 5 slides */</span><br />
+                              <span class="comment">/* show 3 slides */</span><br />
+                              <span class="comment">/* show 2 slides */</span><br />
+                          </code>
+                      </div>
+                  </div>
+                </div>
+                <p>Below are CSS and LESS examples. Some styles are required, while others are just reccomended.</p>
+                <div>
+                  <!-- Nav tabs -->
+                  <button class="btn btn-default" type="button" data-toggle="collapse" data-target="#cssPanel" aria-expanded="false" aria-controls="cssPanel">Show CSS</button>
+                  <button class="btn btn-default" type="button" data-toggle="collapse" data-target="#lessPanel" aria-expanded="false" aria-controls="lessPanel">Show LESS</button>
+                  <div class="collapse" id="cssPanel">
+                      <div class="panel panel-default">
+                          <div class="panel-body">
+                              <button type="button" class="hideComments btn btn-xs btn-default pull-right">Hide comments</button>
+<code>
+#exampleSlider {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;position: relative;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/* recommended */</span><br>
+}<br>
+#exampleSlider .MS-content {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;white-space: nowrap;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/* required */</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;overflow: hidden;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/* required */</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;margin: 0 5%;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/* makes room for L/R arrows */</span><br>
+}<br>
+#exampleSlider .MS-content .item {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;display: inline-block;&nbsp;&nbsp;&nbsp;<span class="comment">/* required */</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;width: 20%;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/* required * Determines number of visible slides */ </span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;position: relative;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/* required */</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;vertical-align: top;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/* required */</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;overflow: hidden;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/* required */</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;height: 100%;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/* recommended */</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;white-space: normal;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/* recommended */</span><br>
+}<br>
+#exampleSlider .MS-controls button {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;position: absolute;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/* recommended */</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;top: 35px;<br />
+}<br>
+#exampleSlider .MS-controls .MS-left {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;left: 10px;<br>
+}<br>
+#exampleSlider .MS-controls .MS-right {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;right: 10px;<br>
+}<br>
+</code>
+                          </div>
+                      </div>
+                  </div>
+                  <div class="collapse" id="lessPanel">
+                      <div class="panel panel-default">
+                          <div class="panel-body">
+                               <button type="button" class="hideComments btn btn-xs btn-default pull-right">Hide comments</button>
+                              <code>
+#exampleSlider {<br />
+    &nbsp;&nbsp;&nbsp;&nbsp;position: relative;<br />
+    <br />
+    &nbsp;&nbsp;&nbsp;&nbsp;.MS-content {<br />
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;white-space: nowrap;&nbsp;&nbsp;<span class="comment">/* required */</span><br />
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;overflow: hidden;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/* required */</span><br />
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;margin: 0 5%;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/* makes room for L/R arrows */</span><br />
+        <br />
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.item {<br />
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;display: inline-block; <span class="comment">/* required */</span><br />
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;position: relative; &nbsp;&nbsp;&nbsp;<span class="comment">/* required */</span><br />
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;vertical-align: top; &nbsp;&nbsp;<span class="comment">/* required */</span><br />
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;overflow: hidden; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/* recommended */</span><br />
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;height: 100%; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/* recommended */</span><br />
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;white-space: normal;&nbsp;&nbsp;&nbsp;<span class="comment">/* recommended */</span><br />
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;width: 20%;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/* show 5 slides */</span><br />
+            <br />
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@media (max-width: 1200px) { width: 25%; };&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/* show 4 slides */</span><br />
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@media (max-width: 992px) { width: 33.333%; };&nbsp;<span class="comment">/* show 3 slides */</span><br />
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@media (max-width: 768px) { width: 50%; };&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/* show 2 slides */</span><br />
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br />
+        &nbsp;&nbsp;&nbsp;&nbsp;}<br />
+        <br />
+        &nbsp;&nbsp;&nbsp;&nbsp;.MS-controls {<br />
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;button {<br />
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;position: absolute;<br />
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;top: 35px;<br />
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br />
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.MS-left {<br />
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;left: 10px;</br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br />
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.MS-right {<br />
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;right: 10px;<br />
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br />
+        &nbsp;&nbsp;&nbsp;&nbsp;}<br />
+}
+                              </code>
+                          </div>
+                      </div>
+                  </div>
+
+                </div>
+            </div>
+
+            <!-- jQuery -->
+            <div class="row">
+                <h2 id="jquery">jQuery</h2>
+                <p>Multislider is powered by jQuery, so if you're not including it on your site, then... you need to.<br /> You can get a copy from the <a href="https://jquery.com/download/" target="_blank" class="text-info">official jQuery site</a>, or from <a href="https://developers.google.com/speed/libraries/#jquery" class="text-info" target="_blank">Google</a>.</p>
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        <code>
+                            <span class="comment">&lt;!-- Include jQuery, then include Multislider script --&gt;</span><br />
+                            &lt;script src="../path-to/jquery.min.js"&gt;&lt;/script&gt;<br />
+                            &lt;script src="../path-to/multislider.min.js"&gt;&lt;/script&gt;<br />
+                            <br />
+                            <span class="comment">&lt;!-- Initialize the plugin --&gt;</span><br />
+                            $('#exampleSlider').multislider();<br />
+                            <br />
+                            <span class="comment">&lt;!-- Initialize with options, if needed --&gt;</span><br />
+                            $('#exampleSlider').multislider({<br />
+                            &nbsp;&nbsp;&nbsp;&nbsp;interval:5000,<br />
+                            &nbsp;&nbsp;&nbsp;&nbsp;slideAll:true<br />
+                            });<br />
+                        </code>
+                    </div>
+                </div>
+            </div>
+
+            <!-- OPTIONS -->
+            <div class="row">
+                <h2 id="options">Options</h2>
+                <p>Multislider accepts an options object when it is initalized. Here you can customize the way you'd like the multslider to function. A full list of values and their defaults is shown below.</p>
+                <table class="table table-bordered">
+                    <tr>
+                        <th>Name</th>
+                        <th>Type</th>
+                        <th>Default</th>
+                        <th>Description</th>
+                    </tr>
+                    <tr>
+                        <td>continuous</td>
+                        <td>boolean</td>
+                        <td>false</td>
+                        <td>When marked as true, the multislider will scroll left at a constant speed without stopping. This action is similar to a classic marquee scrolling effect. Because the multislider is in a constant state of animation, left and right arrows will not function unless the multislider is first paused.</td>
+                    </tr>
+                    <tr>
+                        <td>slideAll</td>
+                        <td>boolean</td>
+                        <td>false</td>
+                        <td>Determines if default animation should move only one slide, or if it should move all visible items.</td>
+                    </tr>
+                    <tr>
+                        <td>interval</td>
+                        <td>number</td>
+                        <td>2000</td>
+                        <td>The amount of time between each automatic animation event. If set to 0 or false, the multislider will only scroll when a navigation button is clicked.</td>
+                    </tr>
+                    <tr>
+                        <td>duration</td>
+                        <td>number</td>
+                        <td>500</td>
+                        <td>The amount of time that it takes to complete each slide animation. Larger numbers equate to slower animations.</td>
+                    </tr>
+                    <tr>
+                        <td>hoverPause</td>
+                        <td>boolen</td>
+                        <td>true</td>
+                        <td>Whether or not the multislider should prevent auto-animations when the cursor hovers the content area. If the multislider is currently animating when the content area is hovered, the current animation will finish, but future animations will be prevented as long as the cursor remains hovered. Hovering does not reset the interval timer.</td>
+                    </tr>
+                    <tr>
+                        <td>pauseAbove</td>
+                        <td>Number</td>
+                        <td>null</td>
+                        <td>The multislider will prevent all auto-animations when screen width is above this number.</td>
+                    </tr>
+                    <tr>
+                        <td>pauseBelow</td>
+                        <td>Number</td>
+                        <td>null</td>
+                        <td>The multislider will prevent all auto-animations when the screen width is below this number.</td>
+                    </tr>
+                </table>
+            </div>
+
+            <!-- METHODS -->
+            <div class="row">
+                <h2 id="methods">Methods</h2>
+                <p>Methods can be called any time after the initialization. They return the object, or DOM element that was initally passed to them.</p>
+                <div class="panel panel-default">
+                    <table class="table">
+                        <tr>
+                            <td>
+                                <code><b>.multislider('pause')</b></code>
+                            </td>
+                            <td>Prevents auto-animations. Does not stop or diasble interval timer, and allows animations triggered by other methods, or by user input.</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <code><b>.multislider('unPause')</b></code>
+                            </td>
+                            <td>Unpauses a paused slideshow. Does NOT start auto-animations if they were not intialized.</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <code><b>.multislider('next')</b></code>
+                            </td>
+                            <td>Multislider scrolls one slide to the right, even if the slideshow's auto-animations are paused. </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <code><b>.multislider('nextAll')</b></code>
+                            </td>
+                            <td>Multislider scrolls all visible slides out of view the left, and scrolls into view the same number of subsquent slides. Works on a paused slideshow.</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <code><b>.multislider('prev')</b></code>
+                            </td>
+                            <td>Multislider scrolls one slide to the left, even if the slideshow's auto-animations are paused. </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <code><b>.multislider('prevAll')</b></code>
+                            </td>
+                            <td>Multislider scrolls all visible slides out of view the right, and scrolls into view the same number of previous slides. Works on a paused slideshow.</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <code><b>.multislider('continuous')</b></code>
+                            </td>
+                            <td>If multislider is not currently using an auto-animation timer (interval), or is paused, then this will trigger a continuous sliding effect. Continuous slideshows can be paused, and reactived with this method.</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <!-- EVENTS -->
+            <div class="row">
+                <h2 id="events">Events</h2>
+                <p>All events are fired from the Multislider Wrapper level (the DOM element that was selected on initialization), and bubble up through the rest of the DOM.</p>
+                <table class="table panel panel-default">
+                    <tr>
+                        <td style="border: none;"><code><b>ms.before.animate</b></code></td>
+                        <td style="border: none;">Fires immediately before the animation occurs</td>
+                    </tr>
+                    <tr>
+                        <td><code><b>ms.after.animate</b></code></td>
+                        <td>Fires immediately after the animation ends</td>
+                    </tr>
+                </table>
+                <b>Example:</b>
+                <div class="well">
+                <code>
+                $('#exampleSlider').on('ms.after.animate', function(){ <span class="comment">/* do_something */</span> });
+                </code>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section style="margin: 100px 0;">
+        <div class="row">
+        	<div class="col-md-10">
+                <h2 id="examples" style="padding-top: 20px; margin-bottom: 50px;">Examples</h2>
+        		<div id="logoSlider">
+        			<div class="MS-content">
+        				<div class="item">
+        					<a href="https://www.google.com" target="_blank">
+        						<img src="https://cdn.dealerspike.com/imglib/ManufacturerLogos/coachmen-rv/leprechaun/leprechaun-logo-sm.png" alt="" />
+        					</a>
+        				</div>
+        				<div class="item">
+        					<a href="https://www.google.com" target="_blank">
+        						<img src="https://cdn.dealerspike.com/imglib/ManufacturerLogos/can-am/can-am-logo-sm.png" alt="" />
+        					</a>
+        				</div>
+        				<div class="item">
+        					<a href="https://www.google.com" target="_blank">
+        						<img src="https://cdn.dealerspike.com/imglib/ManufacturerLogos/forest-river/arctic-wolf/FR-arctic-wolf-small.png" alt="" />
+        					</a>
+        				</div>
+        				<div class="item">
+        					<a href="https://www.google.com" target="_blank">
+        						<img src="https://cdn.dealerspike.com/imglib/ManufacturerLogos/forest-river/rockwood/rockwood-logo-sm.png" alt="" />
+        					</a>
+        				</div>
+        				<div class="item">
+        					<a href="https://www.google.com" target="_blank">
+        						<img src="https://cdn.dealerspike.com/imglib/ManufacturerLogos/forest-river/salem/salem-logo-sm.png" alt="" />
+        					</a>
+        				</div>
+        				<div class="item">
+        					<a href="https://www.google.com" target="_blank">
+        						<img src="https://cdn.dealerspike.com/imglib/ManufacturerLogos/FXR/fxr-small.png" alt="" />
+        					</a>
+        				</div>
+        				<div class="item">
+        					<a href="https://www.google.com" target="_blank">
+        						<img src="https://cdn.dealerspike.com/imglib/ManufacturerLogos/forest-river/vengeance/vengeance-logo-sm.png" alt="" />
+        					</a>
+        				</div>
+        				<div class="item">
+        					<a href="https://www.google.com" target="_blank">
+        						<img src="https://cdn.dealerspike.com/imglib/ManufacturerLogos/motorfist/motorfist-small.png" alt="" />
+        					</a>
+        				</div>
+        				<div class="item">
+        					<a href="https://www.google.com" target="_blank">
+        						<img src="https://cdn.dealerspike.com/imglib/ManufacturerLogos/thor-motorcoach/thor-logo-sm.png" alt="" />
+        					</a>
+        				</div>
+        				<div class="item">
+        					<a href="https://www.google.com" target="_blank">
+        						<img src="https://cdn.dealerspike.com/imglib/ManufacturerLogos/winnebago/aspect/aspect-logo-sm.png" alt="" />
+        					</a>
+        				</div>
+        				<div class="item">
+        					<a href="https://www.google.com" target="_blank">
+        						<img src="https://cdn.dealerspike.com/imglib/ManufacturerLogos/winnebago/view/view-logo-sm.png" alt="" />
+        					</a>
+        				</div>
+        			</div><!-- .slider-content -->
+        			<!-- <div class="MS-controls">
+        				<button class="MS-left"><i class="fa fa-chevron-left" aria-hidden="true"></i></button>
+        				<button class="MS-right"><i class="fa fa-chevron-right" aria-hidden="true"></i></button>
+        			</div> -->
+        		</div><!-- #logoSlider -->
+        	</div>
+            <div class="col-md-10" style="margin: 50px 0;">
+                <div id="blogSlider">
+                    <div class="MS-content">
+                        <div class="item">
+                            <div class="imgTitle">
+                                <h2 class="blogTitle">Tractor Tips</h2>
+                                <img src="images/blog1.jpg" alt="" />
+                            </div>
+                            <p>Read our awesome tractor tips!! Fap humblebrag post-ironic tacos etsy bushwick, poke bitters vice. Ramps truffaut chia pinterest intelligentsia...</p>
+                            <a href="#">Read More</a>
+                        </div>
+                        <div class="item">
+                            <div class="imgTitle">
+                                <h2 class="blogTitle">Sexy RV Dates</h2>
+                                <img src="images/blog2.jpg" alt="" />
+                            </div>
+                            <p>Your RV has never been so romantic! Brooklyn kale chips knausgaard succulents fap chartreuse fashion axe iceland. Hoodie pok pok pop-up subway tile...</p>
+                            <a href="#">Read More</a>
+                        </div>
+                        <div class="item">
+                            <div class="imgTitle">
+                                <h2 class="blogTitle">The Ride</h2>
+                                <img src="images/blog3.jpg" alt="" />
+                            </div>
+                            <p>Motorcyles are dope AF. Get one! Ironic brooklyn kale chips knausgaard succulents fap chartreuse fashion axe iceland. Hoodie pok pop meggings...</p>
+                            <a href="#">Read More</a>
+                        </div>
+                        <div class="item">
+                            <div class="imgTitle">
+                                <h2 class="blogTitle">Family Trip</h2>
+                                <img src="images/blog4.jpg" alt="" />
+                            </div>
+                            <p>Family trips are boring. Salvia echo park raclette, knausgaard la croix meh +1 street art mlkshk fashion axe. Enamel pin disrupt...</p>
+                            <a href="#">Read More</a>
+                        </div>
+                        <div class="item">
+                            <div class="imgTitle">
+                                <h2 class="blogTitle">Winter Driving</h2>
+                                <img src="images/blog5.jpg" alt="" />
+                            </div>
+                            <p>Ice-road truckers are tough dudes! Selvage umami vexillologist shoreditch. Hell of hashtag hoodie affogato forage vegan yr. Gochujang ugh listicle...</p>
+                            <a href="#">Read More</a>
+                        </div>
+                        <div class="item">
+                            <div class="imgTitle">
+                                <h2 class="blogTitle">Beach Safety</h2>
+                                <img src="images/blog6.jpg" alt="" />
+                            </div>
+                            <p>Jet skis are fun! Skateboard raw denim vexillologist tumblr hammock, knausgaard poke cray dreamcatcher mumblecore fashion axe cred shabby chic butcher actually. Shoreditch readymade...</p>
+                            <a href="#">Read More</a>
+                        </div>
+                    </div>
+                    <div class="MS-controls">
+                        <button class="MS-left"><i class="fa fa-chevron-left" aria-hidden="true"></i></button>
+                        <button class="MS-right"><i class="fa fa-chevron-right" aria-hidden="true"></i></button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-10">
+        		<div id="reviewsSlider">
+        			<h2>Customer Reviews</h2>
+        		    <div class="MS-content">
+                        <div class="item">
+                            <h3>
+                                <i class="fa fa-quote-left" aria-hidden="true"></i>
+                                These guys rock!!
+                                <i class="fa fa-quote-right" aria-hidden="true"></i>
+                            </h3>
+                            <p>A bunch of cool things about this company and stuff! Trust fund snackwave la croix, blue bottle pok pok wayfarers you probably haven't heard of them. Four loko distillery freegan enamel pin iceland, vinyl cliche ramps af!</p>
+        					<h4>John Johnson | Flattown, OH</h4>
+        		        </div>
+                        <div class="item">
+                            <h3>
+                                <i class="fa fa-quote-left" aria-hidden="true"></i>
+                                Worth Every Penny!
+                                <i class="fa fa-quote-right" aria-hidden="true"></i>
+                            </h3>
+                            <p>I spent a fortune here, and I'm glad I did! Man braid flexitarian cliche, narwhal whatever YOLO fam ramps sustainable banjo chartreuse fanny pack sartorial typewriter. Iceland gochujang whatever, beard four dollar toast heirloom pabst bushwick pitchfork vexillologist. </p>
+        					<h4>Danielle Perfer| Shortsville, CA</h4>
+        		        </div>
+                        <div class="item">
+                            <h3>
+                                <i class="fa fa-quote-left" aria-hidden="true"></i>
+                                Highly Recommended!
+                                <i class="fa fa-quote-right" aria-hidden="true"></i>
+                            </h3>
+                            <p>Since the moment I signed on, I have been nothing but pleased! Swag blue bottle portland, raw denim godard disrupt jianbing vape shabby chic VHS narwhal. Craft beer tacos salvia, freegan tumeric kombucha cronut tote bag brunch vape.</p>
+        					<h4>Timothy McCook | Porter, PA</h4>
+        		        </div>
+                        <div class="item">
+                            <h3>
+                                <i class="fa fa-quote-left" aria-hidden="true"></i>
+                                Will do Business With Again!
+                                <i class="fa fa-quote-right" aria-hidden="true"></i>
+                            </h3>
+                            <p>I sign up all of my forty thousand companies for this dope AF service! Post-ironic af craft beer pour-over. Messenger bag unicorn tote bag man braid, pug typewriter normcore. Yr af occupy actually. 8-bit kitsch poutine gastropub, copper mug actually photo booth.</p>
+        					<h4>Fanny Buttlicker | Georgetown, NV</h4>
+        		        </div>
+        		    </div>
+        		    <div class="MS-controls">
+        		        <button class="MS-left"><i class="fa fa-chevron-left" aria-hidden="true"></i></button>
+        		        <button class="MS-right"><i class="fa fa-chevron-right" aria-hidden="true"></i></button>
+        		    </div>
+        		</div>
+        	</div>
+        </div>
+    </section>
+
+    <!-- ==== JQUERY === -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/custom.js"></script>
+    <script src="js/multislider.min.js"></script>
+    <script>
+        $('#exampleSlider1').multislider({interval: 2500});
+        $('#exampleSlider2').multislider({
+            interval: 3000,
+            slideAll: true,
+            duration: 1500
+        });
+        $('#exampleSlider3').multislider({
+            continuous: true,
+            duration: 4000
+        });
+        $('#logoSlider').multislider({
+			continuous: true,
+			duration: 2000
+		});
+        $('#blogSlider').multislider({
+			duration: 750,
+			interval: 3000
+		});
+        $('#reviewsSlider').multislider({
+			slideAll: true,
+            autoSlide: true,
+            duration: 1000,
+			interval: 4000
+		});
+    </script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-102591280-2"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-102591280-2');
+
+  $('#download-button').click(function(){
+    !!ga && ga('send', 'event', 'Download Button', 'Downloaded', 'Multislider was downloaded');
+  });
+</script>
+
+  </body>
+</html>
