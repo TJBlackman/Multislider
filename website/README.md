@@ -1,4 +1,5 @@
 # Multislider
+
 A responsive, jQuery powered, multi-slideshow.
 
-View docs at [http://www.multislider.info](http://www.multislider.info)
+View docs at [https://multislider.trevorblackman.io](https://multislider.trevorblackman.io)
