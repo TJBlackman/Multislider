@@ -22,6 +22,7 @@ import type {
   PauseDetail,
   PauseReason,
   ResolvedOptions,
+  SettleDetail,
 } from "./types";
 
 const VIEWPORT_SELECTOR = '[data-ms="viewport"], .ms-viewport, .MS-content';
@@ -48,6 +49,8 @@ interface DragState {
   lastTime: number;
   velocity: number;
   moved: boolean;
+  /** Whether the pointerdown cancelled a running job (tween, momentum, marquee). */
+  interrupted: boolean;
 }
 
 export class Multislider {
@@ -196,7 +199,7 @@ export class Multislider {
     // A marquee cancels at an arbitrary offset and step mode must rest on a
     // boundary. Skip during a drag; pointerup snaps with fresher intent.
     if (next === "step" && this.#drag === null) {
-      this.#snap();
+      this.#snap(true);
       return;
     }
     this.#syncLoop();
@@ -627,6 +630,7 @@ export class Multislider {
       this.#engine.tween(delta, this.#duration(), () => {
         this.#emit("afterchange", detail);
         this.#syncLoop();
+        this.#settled();
       });
       return;
     }
@@ -659,6 +663,7 @@ export class Multislider {
     this.#engine.tween(delta, this.#duration(), () => {
       this.#emit("afterchange", detail);
       this.#syncLoop();
+      this.#settled();
     });
   }
 
@@ -692,12 +697,24 @@ export class Multislider {
     this.#engine.tween(-this.#engine.offset, this.#duration(), () => {
       this.#emit("afterchange", detail);
       this.#syncLoop();
+      this.#settled();
     });
   }
 
+  /** Terminal signal: motion came to rest in step mode. */
+  #settled(): void {
+    if (this.#mode !== "step") return;
+    const detail: SettleDetail = {
+      index: this.#logical(
+        headAt(this.#engine.metrics.slides, this.#engine.offset).index
+      ),
+    };
+    this.#emit("settle", detail);
+  }
+
   #emit(
-    name: "beforechange" | "afterchange" | "pause" | "play",
-    detail: ChangeDetail | PauseDetail,
+    name: "beforechange" | "afterchange" | "settle" | "pause" | "play",
+    detail: ChangeDetail | PauseDetail | SettleDetail,
     cancelable = false
   ): boolean {
     return this.#root.dispatchEvent(
@@ -819,6 +836,7 @@ export class Multislider {
     if (this.#destroyed || this.#drag !== null) return;
     if (typeof event.button === "number" && event.button !== 0) return;
 
+    const interrupted = this.#engine.jobKind !== null;
     this.#engine.cancel();
     this.#drag = {
       pointerId: event.pointerId,
@@ -828,6 +846,7 @@ export class Multislider {
       lastTime: eventTime(event),
       velocity: 0,
       moved: false,
+      interrupted,
     };
     this.#addReason("drag");
     if (typeof this.#track.setPointerCapture === "function") {
@@ -879,7 +898,9 @@ export class Multislider {
       // A press can land mid tween (pointerdown cancels it); settle the
       // fractional offset instead of freezing until the next autoplay tick.
       // On an aligned offset this is a zero-delta tween completing at once.
-      if (this.#mode === "step") this.#snap();
+      // Settle fires only if the tap actually interrupted motion, so plain
+      // taps on an idle slider stay silent.
+      if (this.#mode === "step") this.#snap(drag.interrupted);
       return;
     }
 
@@ -892,13 +913,13 @@ export class Multislider {
     const stale = eventTime(event) - drag.lastTime > STALE_MS;
     if (!canceled) this.#blockNextClick();
     this.#engine.startMomentum(canceled || stale ? 0 : drag.velocity, () => {
-      if (this.#mode === "step") this.#snap();
+      if (this.#mode === "step") this.#snap(true);
       else this.#syncLoop();
     });
     this.#removeReason("drag");
   };
 
-  #snap(): void {
+  #snap(emitSettle: boolean): void {
     const metrics = this.#engine.metrics;
     if (metrics.slides.length === 0) {
       this.#syncLoop();
@@ -926,7 +947,10 @@ export class Multislider {
       delta = normalizeOffset(delta, metrics.contentSize);
       if (delta > metrics.contentSize / 2) delta -= metrics.contentSize;
     }
-    this.#engine.tween(delta, this.#duration(), () => this.#syncLoop());
+    this.#engine.tween(delta, this.#duration(), () => {
+      this.#syncLoop();
+      if (emitSettle) this.#settled();
+    });
   }
 
   #blockNextClick(): void {

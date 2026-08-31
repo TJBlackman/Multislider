@@ -524,6 +524,66 @@ describe("loop guard", () => {
   });
 });
 
+describe("settle event", () => {
+  it("fires once per completed step with the resting head index", () => {
+    useLayout({ viewport: 300, sizes: FIVE });
+    const root = makeMarkup(5);
+    const instance = build(root);
+    const settled = collect(root, "settle");
+
+    instance.next();
+    expect(settled).toHaveLength(1);
+    expect(settled[0]!.detail).toEqual({ index: 1 });
+
+    instance.prev();
+    expect(settled).toHaveLength(2);
+    expect(settled[1]!.detail).toEqual({ index: 0 });
+  });
+
+  it("fires after a drag snaps, but not for a plain tap on an idle slider", () => {
+    useLayout({ viewport: 300, sizes: FIVE });
+    const root = makeMarkup(5);
+    build(root);
+    const track = trackOf(root);
+    const settled = collect(root, "settle");
+
+    const pointer = (type: string, clientX: number, timeStamp: number): Event => {
+      const event = new MouseEvent(type, { bubbles: true, cancelable: true, clientX });
+      Object.defineProperty(event, "pointerId", { value: 1 });
+      Object.defineProperty(event, "timeStamp", { value: timeStamp });
+      return event;
+    };
+
+    // plain tap: no motion interrupted, no settle
+    track.dispatchEvent(pointer("pointerdown", 200, 8));
+    window.dispatchEvent(pointer("pointerup", 200, 24));
+    expect(settled).toHaveLength(0);
+
+    // real drag: snap completion settles
+    track.dispatchEvent(pointer("pointerdown", 200, 40));
+    window.dispatchEvent(pointer("pointermove", 140, 56));
+    window.dispatchEvent(pointer("pointermove", 140, 300));
+    window.dispatchEvent(pointer("pointerup", 140, 500));
+    expect(settled).toHaveLength(1);
+    expect(settled[0]!.detail).toEqual({ index: 1 });
+  });
+
+  it("fires when leaving marquee mode, and never while the marquee runs", () => {
+    useLayout({ viewport: 300, sizes: FIVE });
+    const root = makeMarkup(5);
+    const instance = build(root, { mode: "marquee", speed: 1000 });
+    const settled = collect(root, "settle");
+
+    raf.step(16);
+    raf.step(70);
+    expect(settled).toHaveLength(0);
+
+    instance.setMode("step");
+    expect(settled).toHaveLength(1);
+    expect(settled[0]!.detail).toEqual({ index: 1 });
+  });
+});
+
 describe("clamped mode", () => {
   // 301 originals block even one clone set under the 600 element cap while
   // content (6020) still exceeds the viewport (6010), so max offset is 10.

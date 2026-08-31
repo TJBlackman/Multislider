@@ -509,6 +509,15 @@ const slider = new Multislider('#mySlider', {
                     </td>
                   </tr>
                   <tr>
+                    <td><code>multislider:settle</code></td>
+                    <td><code>{ index }</code></td>
+                    <td>
+                      The terminal signal: motion came to rest in step mode, after a step, a drag's
+                      snap, or a mode switch realignment. Guaranteed even when a superseded step
+                      fired no afterchange. Marquee mode never fires it.
+                    </td>
+                  </tr>
+                  <tr>
                     <td><code>multislider:pause</code></td>
                     <td><code>{ reasons: string[] }</code></td>
                     <td>Fires when the reason set goes from empty to nonempty.</td>

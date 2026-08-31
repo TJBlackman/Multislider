@@ -52,6 +52,11 @@ export interface PauseDetail {
   reasons: PauseReason[];
 }
 
+export interface SettleDetail {
+  /** Logical index of the head slide at rest. */
+  index: number;
+}
+
 /** Geometry of one box in physical (screen) coordinates. */
 export interface BoxGeometry {
   left: number;
@@ -82,6 +87,7 @@ export type WrapState = -1 | 0 | 1;
 export interface MultisliderEventMap {
   "multislider:beforechange": CustomEvent<ChangeDetail>;
   "multislider:afterchange": CustomEvent<ChangeDetail>;
+  "multislider:settle": CustomEvent<SettleDetail>;
   "multislider:pause": CustomEvent<PauseDetail>;
   "multislider:play": CustomEvent<PauseDetail>;
 }

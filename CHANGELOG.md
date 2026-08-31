@@ -44,6 +44,9 @@ an IIFE build. Everything from `2.0.0-beta.0` plus the hardening pass below.
 
 ### Added
 
+- `multislider:settle` event (`detail: { index }`): the terminal signal that
+  motion came to rest in step mode, guaranteed even when a superseded step
+  fired no afterchange. Marquee mode never fires it.
 - CSS `gap` on `.ms-track` is fully supported and folds into the wrap math,
   including percent gaps and RTL.
 - Slides get `role="group"`, `aria-roledescription="slide"`, and positional

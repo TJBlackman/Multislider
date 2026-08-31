@@ -72,6 +72,7 @@ Native `CustomEvent`s dispatched on the root element, bubbling:
 
 - `multislider:beforechange` — cancelable; `preventDefault()` blocks the step. `detail: { from, to, direction, count }` where `from`/`to` are logical head slide indices and `direction` is `1 | -1`.
 - `multislider:afterchange` — same detail, fired once per step that completes (never per frame; marquee mode fires neither). A step superseded before completion, by a pointer grab, `setMode()`, or `destroy()`, fires no afterchange, so `beforechange` may fire without a matching afterchange. Rapid successive steps are unaffected: a new step commits the in-flight one first, firing its afterchange synchronously.
+- `multislider:settle` — `detail: { index }`, the logical head index at rest. The terminal signal for step mode: fires each time motion comes to rest, after a completed step or rewind, after a drag's snap, after a tap that interrupted motion settles, and after a `setMode("step")` realignment. A plain tap on an idle slider fires nothing. Marquee mode never fires it.
 - `multislider:pause` / `multislider:play` — `detail: { reasons: string[] }`, fired when the pause reason set becomes nonempty / empty.
 
 ## Engine architecture (binding)

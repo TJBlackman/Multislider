@@ -86,7 +86,8 @@ Full reference on the [docs site](https://multislider.trevorblackman.dev). The s
 - Methods include `next()`, `prev()`, `nextPage()`, `prevPage()`, `pause()`, `play()`, `refresh()`,
   `setMode()`, and `destroy()`.
 - Events are native bubbling `CustomEvent`s on the root element: `multislider:beforechange`
-  (cancelable), `multislider:afterchange`, `multislider:pause`, and `multislider:play`.
+  (cancelable), `multislider:afterchange`, `multislider:settle`, `multislider:pause`, and
+  `multislider:play`.
 
 ## Version 1
 

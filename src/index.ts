@@ -13,6 +13,7 @@ export type {
   PauseDetail,
   PauseReason,
   ResolvedOptions,
+  SettleDetail,
   SlideMetric,
   WrapState,
 } from "./types";
