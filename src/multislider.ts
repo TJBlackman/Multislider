@@ -300,6 +300,15 @@ export class Multislider {
     this.#on(view, "pointermove", this.#onPointerMove as EventListener);
     this.#on(view, "pointerup", this.#onPointerUp as EventListener);
     this.#on(view, "pointercancel", this.#onPointerUp as EventListener);
+
+    // A native image/link drag cancels the pointer stream, and text selection
+    // fights the gesture. Both are gated on an active press so selections
+    // anchored outside the carousel still drag across it.
+    const blockDuringDrag = (event: Event): void => {
+      if (this.#drag !== null) event.preventDefault();
+    };
+    this.#on(this.#track, "dragstart", blockDuringDrag);
+    this.#on(this.#track, "selectstart", blockDuringDrag);
   }
 
   #wireFocusAndKeys(): void {

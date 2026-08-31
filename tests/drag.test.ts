@@ -115,6 +115,52 @@ describe("drag", () => {
     expect(slider!.paused).toBe(false);
   });
 
+  it("cancels native dragstart and selectstart while a pointer is down", () => {
+    const { track } = setup();
+    track.dispatchEvent(pointer("pointerdown", 200, 0));
+
+    const drag = new Event("dragstart", { bubbles: true, cancelable: true });
+    track.dispatchEvent(drag);
+    expect(drag.defaultPrevented).toBe(true);
+
+    // below the 4px threshold the press must still be protected
+    window.dispatchEvent(pointer("pointermove", 198, 16));
+    const select = new Event("selectstart", { bubbles: true, cancelable: true });
+    track.dispatchEvent(select);
+    expect(select.defaultPrevented).toBe(true);
+  });
+
+  it("lets dragstart and selectstart through when no gesture is active", () => {
+    const { track } = setup();
+    const drag = new Event("dragstart", { bubbles: true, cancelable: true });
+    track.dispatchEvent(drag);
+    expect(drag.defaultPrevented).toBe(false);
+
+    track.dispatchEvent(pointer("pointerdown", 200, 0));
+    window.dispatchEvent(pointer("pointerup", 200, 32));
+    const select = new Event("selectstart", { bubbles: true, cancelable: true });
+    track.dispatchEvent(select);
+    expect(select.defaultPrevented).toBe(false);
+  });
+
+  it("does not intercept dragstart when draggable is off", () => {
+    const { track } = setup({ draggable: false });
+    track.dispatchEvent(pointer("pointerdown", 200, 0));
+    const drag = new Event("dragstart", { bubbles: true, cancelable: true });
+    track.dispatchEvent(drag);
+    expect(drag.defaultPrevented).toBe(false);
+  });
+
+  it("stops intercepting dragstart after destroy", () => {
+    const { track } = setup();
+    slider!.destroy();
+    slider = null;
+    track.dispatchEvent(pointer("pointerdown", 200, 0));
+    const drag = new Event("dragstart", { bubbles: true, cancelable: true });
+    track.dispatchEvent(drag);
+    expect(drag.defaultPrevented).toBe(false);
+  });
+
   it("drags the other way in RTL", () => {
     useLayout({ viewport: 300, sizes: [100, 100, 100, 100, 100], rtl: true });
     const root = makeMarkup(5);
