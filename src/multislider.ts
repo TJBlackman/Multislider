@@ -251,6 +251,27 @@ export class Multislider {
     ) {
       this.#setAttribute(this.#root, "aria-label", "slideshow");
     }
+    const total = this.#originalSlides.length;
+    for (let i = 0; i < total; i++) {
+      const slide = this.#originalSlides[i];
+      if (!slide) continue;
+      this.#setAttribute(slide, "role", "group");
+      this.#setAttribute(slide, "aria-roledescription", "slide");
+      if (
+        !slide.hasAttribute("aria-label") &&
+        !slide.hasAttribute("aria-labelledby")
+      ) {
+        this.#setAttribute(slide, "aria-label", `${i + 1} of ${total}`);
+      }
+    }
+  }
+
+  /** Per the APG carousel pattern: announce changes only while not rotating. */
+  #syncLiveRegion(): void {
+    const rotating =
+      this.#reasons.size === 0 &&
+      (this.#mode === "marquee" || this.#options.interval > 0);
+    this.#track.setAttribute("aria-live", rotating ? "off" : "polite");
   }
 
   #setAttribute(element: Element, name: string, value: string): void {
@@ -683,6 +704,7 @@ export class Multislider {
 
   #syncLoop(): void {
     if (this.#destroyed) return;
+    this.#syncLiveRegion();
     const running = this.#reasons.size === 0;
 
     if (this.#mode === "marquee") {

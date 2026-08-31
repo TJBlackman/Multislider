@@ -93,6 +93,7 @@ One engine serves step, page, marquee, and drag:
 ## Accessibility
 
 - Root gets `aria-roledescription="carousel"` and `role="region"` (plus `aria-label="slideshow"` only if the user provided no label).
+- Slides get `role="group"`, `aria-roledescription="slide"`, and a positional `aria-label` (`"n of N"`) unless already labelled. The track carries `aria-live`: `"off"` while auto-rotating, `"polite"` while paused or when autoplay is disabled.
 - Buttons without accessible names get `aria-label="Previous slide"` / `"Next slide"`.
 - Autoplay pauses on `focusin` within the root (its own `"focus"` reason, independent of hover, and active even with `hoverPause: false`) and resumes on `focusout`.
 - Keyboard: ArrowLeft/ArrowRight trigger prev/next when focus is on the root or the buttons. The arrow points at the edge new content enters from, so RTL flips the mapping (ArrowLeft advances). Events with a modifier key held or already `defaultPrevented` are ignored.

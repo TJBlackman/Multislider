@@ -97,6 +97,42 @@ describe("initialization", () => {
     expect(root.getAttribute("aria-label")).toBe("slideshow");
   });
 
+  it("gives slides group semantics and positional labels", () => {
+    useLayout({ viewport: 300, sizes: FIVE });
+    const root = makeMarkup(5);
+    const instance = build(root);
+    const first = trackOf(root).children[0]!;
+
+    expect(first.getAttribute("role")).toBe("group");
+    expect(first.getAttribute("aria-roledescription")).toBe("slide");
+    expect(first.getAttribute("aria-label")).toBe("1 of 5");
+
+    instance.destroy();
+    slider = null;
+    expect(first.hasAttribute("role")).toBe(false);
+    expect(first.hasAttribute("aria-label")).toBe(false);
+  });
+
+  it("keeps the live region off while rotating and polite while paused", () => {
+    useLayout({ viewport: 300, sizes: FIVE });
+    const root = makeMarkup(5);
+    const instance = build(root, { interval: 2000 });
+    const track = trackOf(root);
+
+    expect(track.getAttribute("aria-live")).toBe("off");
+    instance.pause();
+    expect(track.getAttribute("aria-live")).toBe("polite");
+    instance.play();
+    expect(track.getAttribute("aria-live")).toBe("off");
+  });
+
+  it("marks the live region polite when autoplay is disabled", () => {
+    useLayout({ viewport: 300, sizes: FIVE });
+    const root = makeMarkup(5);
+    build(root); // interval: 0
+    expect(trackOf(root).getAttribute("aria-live")).toBe("polite");
+  });
+
   it("throws for a missing target, a missing viewport and a double init", () => {
     useLayout({ viewport: 300, sizes: FIVE });
     expect(() => new Multislider("#nope")).toThrow(/no element matched/);
