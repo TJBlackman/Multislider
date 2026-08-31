@@ -256,8 +256,9 @@
               Changing slide widths remeasures automatically. Also avoid <code>order</code>,
               <code>flex-direction: row-reverse</code>, and transitions on <code>transform</code>
               for slides or the track: the wrap math assumes DOM order is layout order and that
-              transforms apply instantly. Everything else, including the arrow buttons, is yours to
-              style.
+              transforms apply instantly. Prefer margins over horizontal padding on the viewport,
+              since slides wrap at the content box edge and padding would show them popping in and
+              out. Everything else, including the arrow buttons, is yours to style.
             </p>
           </section>
 
@@ -501,7 +502,11 @@ const slider = new Multislider('#mySlider', {
                   <tr>
                     <td><code>multislider:afterchange</code></td>
                     <td><code>{ from, to, direction, count }</code></td>
-                    <td>Once per committed step, never per frame. Marquee mode fires neither.</td>
+                    <td>
+                      Once per step that completes, never per frame. A step superseded by a pointer
+                      grab, <code>setMode()</code>, or <code>destroy()</code> fires no afterchange.
+                      Marquee mode fires neither event.
+                    </td>
                   </tr>
                   <tr>
                     <td><code>multislider:pause</code></td>

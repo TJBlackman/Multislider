@@ -1,6 +1,6 @@
 {
   "name": "@tjblackman/multislider",
-  "version": "2.0.0-beta.0",
+  "version": "2.0.0",
   "description": "A responsive, dependency free, multi-slide slideshow. Bring your own markup and CSS.",
   "license": "MIT",
   "author": "Trevor Blackman",
@@ -40,7 +40,8 @@
     "./package.json": "./package.json"
   },
   "files": [
-    "dist"
+    "dist",
+    "CHANGELOG.md"
   ],
   "publishConfig": {
     "access": "public"
