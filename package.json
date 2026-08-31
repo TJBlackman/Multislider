@@ -44,7 +44,8 @@
     "typecheck": "tsc --noEmit",
     "dev": "vite site",
     "site:build": "vite build site",
-    "site:preview": "vite preview site"
+    "site:preview": "vite preview site",
+    "site:deploy": "vite build site && wrangler deploy"
   },
   "devDependencies": {
     "jsdom": "^30.0.1",
