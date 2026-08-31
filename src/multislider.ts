@@ -691,8 +691,11 @@ export class Multislider {
       return;
     }
 
-    this.#blockNextClick();
-    this.#engine.startMomentum(drag.velocity, () => {
+    // A canceled pointer never produces a click, and its velocity reflects a
+    // gesture the OS took over, so skip the blocker and settle without a fling.
+    const canceled = event.type === "pointercancel";
+    if (!canceled) this.#blockNextClick();
+    this.#engine.startMomentum(canceled ? 0 : drag.velocity, () => {
       if (this.#mode === "step") this.#snap();
       else this.#syncLoop();
     });

@@ -161,6 +161,29 @@ describe("drag", () => {
     expect(drag.defaultPrevented).toBe(false);
   });
 
+  it("settles without momentum when the gesture is canceled", () => {
+    const { track } = setup();
+    track.dispatchEvent(pointer("pointerdown", 200, 0));
+    window.dispatchEvent(pointer("pointermove", 140, 16)); // fast move = real velocity
+    window.dispatchEvent(pointer("pointercancel", 140, 32));
+    // zero velocity: done() ran synchronously and the snap landed at once
+    expect(track.style.transform).toBe("translate3d(-100px, 0, 0)");
+    expect(slider!.paused).toBe(false);
+  });
+
+  it("does not block the next click after pointercancel", () => {
+    const { root, track } = setup();
+    let clicked = 0;
+    root.addEventListener("click", () => {
+      clicked += 1;
+    });
+    track.dispatchEvent(pointer("pointerdown", 200, 0));
+    window.dispatchEvent(pointer("pointermove", 120, 16));
+    window.dispatchEvent(pointer("pointercancel", 120, 32));
+    track.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+    expect(clicked).toBe(1);
+  });
+
   it("drags the other way in RTL", () => {
     useLayout({ viewport: 300, sizes: [100, 100, 100, 100, 100], rtl: true });
     const root = makeMarkup(5);
