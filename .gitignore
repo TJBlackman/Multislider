@@ -2,4 +2,6 @@
 node_modules/
 dist/
 site/dist/
+site/.vite/
+.wrangler/
 *.tsbuildinfo
