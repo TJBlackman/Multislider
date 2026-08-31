@@ -108,14 +108,25 @@ export class Engine {
     this.#schedule();
   }
 
-  /** Jump an in-flight tween to its end so a new step can start from a settled offset. */
-  finishTween(): void {
+  /**
+   * Complete an in-flight tween's offset without rendering or firing its
+   * callback. Returns the pending callback so callers can defer it past a
+   * remeasure. Callers must render.
+   */
+  settleTween(): (() => void) | null {
     const job = this.#job;
-    if (!job || job.kind !== "tween") return;
+    if (!job || job.kind !== "tween") return null;
     this.cancel();
     this.setOffset(job.from + job.delta);
+    return job.done;
+  }
+
+  /** Jump an in-flight tween to its end so a new step can start from a settled offset. */
+  finishTween(): void {
+    if (this.jobKind !== "tween") return;
+    const done = this.settleTween();
     this.render();
-    job.done?.();
+    done?.();
   }
 
   startMarquee(speed: number): void {

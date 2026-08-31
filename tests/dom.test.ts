@@ -502,6 +502,73 @@ describe("refresh and resize", () => {
   });
 });
 
+describe("remeasure during motion", () => {
+  it("settles a mid-flight tween into the new geometry without a zombie frame", () => {
+    useLayout({ viewport: 300, sizes: FIVE });
+    const root = makeMarkup(5);
+    const instance = build(root, { duration: 300 });
+    const after = collect(root, "afterchange");
+
+    instance.next();
+    raf.run(5); // mid tween
+    useLayout({ viewport: 300, sizes: [50, 50, 50, 50, 50] });
+    instance.refresh();
+
+    // The tween target (head index 1) survives into the new slide widths.
+    expect(trackOf(root).style.transform).toBe("translate3d(-50px, 0, 0)");
+    expect(after).toHaveLength(1);
+
+    raf.run(5); // any zombie tween frame would move the offset again
+    expect(trackOf(root).style.transform).toBe("translate3d(-50px, 0, 0)");
+  });
+
+  it("gives a reentrant next() from afterchange the new metrics", () => {
+    useLayout({ viewport: 300, sizes: FIVE });
+    const root = makeMarkup(5);
+    const instance = build(root, { duration: 300 });
+    let calls = 0;
+    root.addEventListener("multislider:afterchange", () => {
+      calls += 1;
+      if (calls === 1) instance.next();
+    });
+
+    instance.next();
+    raf.run(5);
+    useLayout({ viewport: 300, sizes: [50, 50, 50, 50, 50] });
+    instance.refresh();
+    raf.run(30); // let the reentrant tween finish
+
+    // 50px (settled head 1) plus one new-geometry slide of 50px.
+    expect(trackOf(root).style.transform).toBe("translate3d(-100px, 0, 0)");
+    expect(calls).toBe(2);
+  });
+
+  it("keeps an active drag continuous across a remeasure", () => {
+    useLayout({ viewport: 300, sizes: FIVE });
+    const root = makeMarkup(5);
+    const instance = build(root);
+    const track = trackOf(root);
+
+    const pointer = (type: string, clientX: number, timeStamp: number): Event => {
+      const event = new MouseEvent(type, { bubbles: true, cancelable: true, clientX });
+      Object.defineProperty(event, "pointerId", { value: 1 });
+      Object.defineProperty(event, "timeStamp", { value: timeStamp });
+      return event;
+    };
+
+    // nonzero timestamps so eventTime() uses them and lastX tracks the pointer
+    track.dispatchEvent(pointer("pointerdown", 200, 8));
+    window.dispatchEvent(pointer("pointermove", 150, 24));
+    expect(track.style.transform).toBe("translate3d(-50px, 0, 0)");
+
+    useLayout({ viewport: 300, sizes: [50, 50, 50, 50, 50] });
+    instance.refresh(); // head 0 at fraction 0.5 of a 50px slide = offset 25
+
+    window.dispatchEvent(pointer("pointermove", 149, 40));
+    expect(track.style.transform).toBe("translate3d(-26px, 0, 0)");
+  });
+});
+
 describe("focus", () => {
   it("jumps so the focused slide is visible and pauses while focus is inside", () => {
     useLayout({ viewport: 300, sizes: FIVE });

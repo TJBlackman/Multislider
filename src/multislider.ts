@@ -393,6 +393,12 @@ export class Multislider {
   }
 
   #measure(): void {
+    // Settle an in-flight tween first: its from/delta are absolute offsets in
+    // the old geometry and would clobber the re-derived offset next frame.
+    // Its done callback is deferred until the new geometry is live so a
+    // reentrant next()/refresh() from an afterchange handler sees fresh metrics.
+    const settledDone = this.#engine.settleTween();
+
     const previous = this.#engine.metrics;
     const head =
       previous.slides.length > 0
@@ -426,6 +432,15 @@ export class Multislider {
     this.#engine.setOffset(
       offsetForHead(metrics.slides, head.index, head.fraction, metrics.contentSize)
     );
+
+    // Keep an active drag continuous: rebase its anchor so the next pointermove
+    // reproduces the offset we just derived instead of one from old geometry.
+    if (this.#drag) {
+      const sign = this.#rtl ? -1 : 1;
+      this.#drag.startOffset =
+        this.#engine.offset + (this.#drag.lastX - this.#drag.startX) * sign;
+    }
+
     this.#engine.render();
 
     // A focused slide removed by a content swap fires no focusout in some
@@ -433,6 +448,8 @@ export class Multislider {
     if (!this.#root.contains(this.#root.ownerDocument.activeElement)) {
       this.#removeReason("focus");
     }
+
+    settledDone?.();
   }
 
   #addDuplicates(): void {
