@@ -11,7 +11,10 @@
     "verbatimModuleSyntax": true,
     "isolatedModules": true,
     "noEmit": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "paths": {
+      "@tjblackman/multislider": ["./src/index.ts"]
+    }
   },
   "include": ["src", "tests", "site"]
 }
