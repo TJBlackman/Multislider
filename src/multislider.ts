@@ -29,6 +29,9 @@ const TRACK_CLASS = "ms-track";
 const CLONE_ATTR = "data-ms-clone";
 const DRAG_THRESHOLD = 4; // px before a pointer gesture counts as a drag
 const CLICK_BLOCK_MS = 300;
+const MAX_SLIDE_ELEMENTS = 600; // cap on originals plus clones across all sets
+const MAX_GUARD_PASSES = 3;
+const GUARD_EPS = 0.5; // px: loop guard tolerance, edge detection, progress check
 
 const instances = new WeakMap<HTMLElement, Multislider>();
 
@@ -417,18 +420,50 @@ export class Multislider {
     this.#applySlideStyles(slides);
     let metrics = this.#readMetrics(slides);
 
-    if (needsMoreContent(metrics) && this.#originalSlides.length > 0) {
-      this.#addDuplicates();
+    // Arithmetic first, verified, bounded: estimate the clone sets needed from
+    // the measured shortfall, append, and remeasure. Extra passes cover CSS
+    // that resizes clones once they exist (last-child margins, subpixel rects).
+    const n = this.#originalSlides.length;
+    let passes = 0;
+    while (
+      needsMoreContent(metrics) &&
+      n > 0 &&
+      metrics.contentSize > GUARD_EPS &&
+      passes < MAX_GUARD_PASSES
+    ) {
+      const perSet = metrics.contentSize / (slides.length / n);
+      const shortfall =
+        metrics.viewportSize + metrics.maxSlideSize - metrics.contentSize;
+      let copies = Math.max(1, Math.ceil(shortfall / perSet));
+      copies = Math.min(
+        copies,
+        Math.floor((MAX_SLIDE_ELEMENTS - slides.length) / n)
+      );
+      if (copies <= 0) break; // cap hit
+
+      const before = metrics.contentSize;
+      this.#addDuplicates(copies);
       slides = this.#slideElements();
       this.#applySlideStyles(slides);
       metrics = this.#readMetrics(slides);
+      passes++;
+      if (metrics.contentSize - before < GUARD_EPS) break; // zero-size clones: no livelock
     }
 
     this.#looping = !needsMoreContent(metrics);
+
+    // Clamped mode runs on originals only: clones would be visible, reachable
+    // duplicate content that is also aria-hidden.
+    if (!this.#looping && this.#duplicates.length > 0) {
+      this.#removeDuplicates();
+      slides = this.#slideElements();
+      metrics = this.#readMetrics(slides);
+    }
+
     if (!this.#looping && metrics.contentSize > 0 && !this.#warnedNoLoop) {
       this.#warnedNoLoop = true;
       console.warn(
-        "Multislider: not enough slide content to loop seamlessly. Looping is disabled; add slides or narrow the viewport."
+        "Multislider: not enough slide content to loop seamlessly within the duplication limit. Looping is disabled; add slides or narrow the viewport."
       );
     }
 
@@ -467,18 +502,20 @@ export class Multislider {
     settledDone?.();
   }
 
-  #addDuplicates(): void {
-    for (const slide of this.#originalSlides) {
-      const clone = slide.cloneNode(true) as HTMLElement;
-      clone.removeAttribute("id");
-      for (const child of Array.from(clone.querySelectorAll("[id]"))) {
-        child.removeAttribute("id");
+  #addDuplicates(copies: number): void {
+    for (let c = 0; c < copies; c++) {
+      for (const slide of this.#originalSlides) {
+        const clone = slide.cloneNode(true) as HTMLElement;
+        clone.removeAttribute("id");
+        for (const child of Array.from(clone.querySelectorAll("[id]"))) {
+          child.removeAttribute("id");
+        }
+        clone.setAttribute("aria-hidden", "true");
+        clone.setAttribute("inert", "");
+        clone.setAttribute(CLONE_ATTR, "");
+        this.#track.appendChild(clone);
+        this.#duplicates.push(clone);
       }
-      clone.setAttribute("aria-hidden", "true");
-      clone.setAttribute("inert", "");
-      clone.setAttribute(CLONE_ATTR, "");
-      this.#track.appendChild(clone);
-      this.#duplicates.push(clone);
     }
   }
 
@@ -792,7 +829,9 @@ export class Multislider {
 }
 
 function needsMoreContent(metrics: Metrics): boolean {
-  return metrics.contentSize < metrics.viewportSize + metrics.maxSlideSize;
+  return (
+    metrics.contentSize + GUARD_EPS < metrics.viewportSize + metrics.maxSlideSize
+  );
 }
 
 function normalizeCount(count: number): number {

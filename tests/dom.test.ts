@@ -429,15 +429,42 @@ describe("loop guard", () => {
     expect(before[0]!.detail as ChangeDetail).toMatchObject({ from: 0, to: 1 });
   });
 
-  it("disables looping and warns when duplication is still not enough", () => {
+  it("computes the needed clone sets arithmetically on ultrawide viewports", () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    useLayout({ viewport: 3840, sizes: [200, 200, 200] });
+    const root = makeMarkup(3);
+    build(root);
+
+    // shortfall (3840 + 200 - 600) needs 6 extra sets: 21 slides, 4200px
+    expect(trackOf(root).children).toHaveLength(21);
+    expect(warn).not.toHaveBeenCalled();
+  });
+
+  it("duplicates several viewports worth for a single wide slide", () => {
     const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
     useLayout({ viewport: 1000, sizes: [100] });
     const root = makeMarkup(1);
+    build(root);
+
+    // 10 clones close the 1000px shortfall and looping stays on
+    expect(trackOf(root).children).toHaveLength(11);
+    expect(warn).not.toHaveBeenCalled();
+  });
+
+  it("disables looping, warns once, and drops clones at the element cap", () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    useLayout({ viewport: 8000, sizes: [10, 10, 10] });
+    const root = makeMarkup(3);
     const instance = build(root);
 
+    // 600 slides of 10px cannot cover 8000px, so clamped mode runs on
+    // originals only with no aria-hidden duplicates of visible content
     expect(warn).toHaveBeenCalledTimes(1);
+    expect(root.querySelectorAll("[data-ms-clone]")).toHaveLength(0);
+    expect(trackOf(root).children).toHaveLength(3);
+
     instance.next(1);
-    // clamped instead of wrapped: the whole content is only 200px wide
+    // clamped: 30px of content in an 8000px viewport cannot move
     expect(trackOf(root).style.transform).toBe("translate3d(0px, 0, 0)");
   });
 });
@@ -640,8 +667,8 @@ describe("remeasure during motion", () => {
     const moving = trackOf(root).style.transform;
     expect(moving).not.toBe("translate3d(0px, 0, 0)");
 
-    // shrink content so even duplication cannot satisfy the loop guard
-    useLayout({ viewport: 300, sizes: [10, 10, 10, 10, 10] });
+    // grow the viewport so even capped duplication cannot satisfy the guard
+    useLayout({ viewport: 8000, sizes: [10, 10, 10, 10, 10] });
     instance.refresh();
     const pinned = trackOf(root).style.transform;
     raf.run(3);
