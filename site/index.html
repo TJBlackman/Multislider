@@ -120,6 +120,7 @@
             <li><a href="#methods">Methods</a></li>
             <li><a href="#events">Events</a></li>
             <li><a href="#accessibility">Accessibility</a></li>
+            <li><a href="#browsers">Browser support</a></li>
             <li><a href="#migrating">Migrating from v1</a></li>
             <li><a href="#more-examples">More examples</a></li>
           </ul>
@@ -137,9 +138,9 @@
             </p>
             <p>
               It is TypeScript, has zero runtime dependencies, and ships as ESM plus one IIFE build
-              for script tag users. It supports modern evergreen browsers. Slides never get cloned
-              or reordered to fake a loop, so your DOM stays the shape you wrote it, with one
-              exception noted under
+              for script tag users. It runs in every evergreen browser; exact versions are under
+              <a href="#browsers">browser support</a>. Slides never get cloned or reordered to fake
+              a loop, so your DOM stays the shape you wrote it, with one exception noted under
               <a href="#markup">markup</a>.
             </p>
           </section>
@@ -210,10 +211,13 @@
             </p>
             <p class="callout">
               An endless loop needs enough content to cover the viewport plus the widest slide. If
-              your slides do not add up to that, the library duplicates the whole set once, marks
-              the copies <code>aria-hidden="true"</code> and <code>inert</code>, and carries on. If
-              even that is not enough, looping turns off, the slider clamps at the ends, and a
-              warning goes to the console. This is the only case where anything gets cloned.
+              your slides do not add up to that, the library duplicates the whole set as many times
+              as the viewport needs, marks the copies <code>aria-hidden="true"</code> and
+              <code>inert</code>, and carries on. Three logos on an ultrawide monitor might clone
+              six sets; the total is capped at 600 slide elements. Past that cap looping turns off,
+              the copies are removed, the slider clamps at the ends with autoplay rewinding to the
+              start, and a warning goes to the console. This is the only case where anything gets
+              cloned.
             </p>
           </section>
 
@@ -242,8 +246,17 @@
               the same slide leading, so nothing jumps.
             </p>
             <p>
-              Padding, borders, and margins on a slide count toward its size, so gaps work however
-              you like to write them. Everything else, including the arrow buttons, is yours to
+              Padding, borders, and margins on a slide count toward its size, and so does
+              <code>gap</code> on the track, so spacing works however you like to write it.
+            </p>
+            <pre><code>#mySlider .ms-track { gap: 16px; }  /* or margins on .item, both work */</code></pre>
+            <p>
+              One caveat: changing only a gap or a margin at a breakpoint does not resize the track,
+              so the ResizeObserver cannot see it. Call <code>refresh()</code> after such a change.
+              Changing slide widths remeasures automatically. Also avoid <code>order</code>,
+              <code>flex-direction: row-reverse</code>, and transitions on <code>transform</code>
+              for slides or the track: the wrap math assumes DOM order is layout order and that
+              transforms apply instantly. Everything else, including the arrow buttons, is yours to
               style.
             </p>
           </section>
@@ -261,12 +274,18 @@ const slider = new Multislider('#mySlider', {
 
             <h3>Script tag</h3>
             <p>
-              The IIFE build puts the class on <code>window.Multislider</code>.
+              The IIFE build puts the class on <code>window.Multislider</code>. Bare unpkg and
+              jsdelivr URLs serve it directly.
             </p>
-            <pre><code>&lt;script src="/path/to/multislider.global.js"&gt;&lt;/script&gt;
+            <pre><code>&lt;script src="https://unpkg.com/@tjblackman/multislider"&gt;&lt;/script&gt;
 &lt;script&gt;
   new Multislider('#mySlider', { mode: 'marquee', speed: 40 });
 &lt;/script&gt;</code></pre>
+            <p>
+              Bundler users who want the same global build can
+              <code>import '@tjblackman/multislider/global'</code>, which also types
+              <code>window.Multislider</code> for TypeScript.
+            </p>
 
             <p>
               The constructor takes a selector string or an element. It throws if the target or its
@@ -444,10 +463,13 @@ const slider = new Multislider('#mySlider', {
               <code>nextPage()</code> when it is <code>"page"</code>.
             </p>
             <p>
-              Pausing is a set of reasons, not a boolean. Hover, an off screen tab, a matched
-              <code>pauseAbove</code> query, a drag, reduced motion, and <code>pause()</code> each
-              add their own reason. Autoplay runs only when the set is empty, which is why hovering
-              a slider you already paused through the API does not accidentally resume it.
+              Pausing is a set of reasons, not a boolean. Hover, keyboard focus, an off screen tab,
+              a matched <code>pauseAbove</code> query, a drag, reduced motion, and
+              <code>pause()</code> each add their own reason (<code>"hover"</code>,
+              <code>"focus"</code>, <code>"hidden"</code>, <code>"media"</code>,
+              <code>"drag"</code>, <code>"reduced-motion"</code>, <code>"api"</code>). Autoplay runs
+              only when the set is empty, which is why hovering a slider you already paused through
+              the API does not accidentally resume it.
             </p>
           </section>
 
@@ -520,7 +542,15 @@ el.addEventListener('multislider:beforechange', (e) =&gt; {
               </li>
               <li>
                 Autoplay pauses on <code>focusin</code> anywhere inside the root and resumes on
-                <code>focusout</code>, the same as hover.
+                <code>focusout</code>, under its own <code>"focus"</code> reason. It applies even
+                with <code>hoverPause: false</code>, so a stray mouse movement can never resume a
+                slider a keyboard user is reading.
+              </li>
+              <li>
+                Slides get <code>role="group"</code>, <code>aria-roledescription="slide"</code>, and
+                a positional label like <code>"2 of 5"</code> unless you labelled them yourself. The
+                track carries <code>aria-live</code>: <code>"off"</code> while auto-rotating,
+                <code>"polite"</code> while paused or when autoplay is disabled.
               </li>
               <li>
                 Tabbing to a link or button in a partly hidden slide jumps the track, with no tween,
@@ -528,7 +558,10 @@ el.addEventListener('multislider:beforechange', (e) =&gt; {
               </li>
               <li>
                 ArrowLeft and ArrowRight step the slider when focus is on the root or on one of the
-                buttons.
+                buttons. The arrow points at the edge new content enters from, so RTL flips the
+                mapping, and presses with a modifier key held are left to the browser. The root only
+                receives arrow keys if you give it a <code>tabindex</code>; the buttons work out of
+                the box.
               </li>
               <li>
                 <code>prefers-reduced-motion: reduce</code> sets step duration to 0, disables
@@ -537,6 +570,57 @@ el.addEventListener('multislider:beforechange', (e) =&gt; {
                 do.
               </li>
             </ul>
+          </section>
+
+          <!-- BROWSER SUPPORT -->
+          <section id="browsers">
+            <h2>Browser support</h2>
+            <p>
+              The build targets ES2022, and the limiting syntax feature is private class methods.
+              That sets the floor:
+            </p>
+            <div class="table-scroll">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Browser</th>
+                    <th>Runs from</th>
+                    <th>Full behavior from</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Chrome / Edge</td>
+                    <td>84</td>
+                    <td>102</td>
+                  </tr>
+                  <tr>
+                    <td>Firefox</td>
+                    <td>90</td>
+                    <td>112</td>
+                  </tr>
+                  <tr>
+                    <td>Safari / iOS Safari</td>
+                    <td>15.0</td>
+                    <td>15.5</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p>
+              "Full behavior" is the <code>inert</code> attribute on cloned slides; older browsers
+              ignore it, and a cloned slide's links could take keyboard focus despite being
+              <code>aria-hidden</code>. Everything else degrades gracefully: without ResizeObserver
+              you call <code>refresh()</code> after layout changes, and without
+              <code>MediaQueryList.addEventListener</code> the pause breakpoints evaluate once at
+              init.
+            </p>
+            <p>
+              The CSS bar is far lower than the JS bar: the page needs flexbox and 2D transforms
+              (Safari 9 era), and the library sets everything it needs inline. The newest CSS it
+              uses is <code>touch-action: pan-y</code> (Safari 13) so touch dragging and vertical
+              page scrolling coexist. Any browser that can parse the JS clears all of it.
+            </p>
           </section>
 
           <!-- MIGRATING -->

@@ -23,8 +23,11 @@ npm i @tjblackman/multislider
 Or drop in the IIFE build, which puts the class on `window.Multislider`.
 
 ```html
-<script src="/path/to/multislider.global.js"></script>
+<script src="https://unpkg.com/@tjblackman/multislider"></script>
 ```
+
+Bundler users can `import '@tjblackman/multislider/global'` for the same global build,
+typed for TypeScript.
 
 ## Quick start
 
@@ -43,6 +46,10 @@ Or drop in the IIFE build, which puts the class on `window.Multislider`.
 ```css
 #mySlider .item {
   width: 25%; /* four visible slides */
+}
+
+#mySlider .ms-track {
+  gap: 16px; /* optional; slide margins work too */
 }
 
 @media (max-width: 768px) {
@@ -91,7 +98,11 @@ renames.
 
 ## Browser support
 
-Modern evergreen browsers.
+The build targets ES2022; the limiting feature is private class methods. It runs from
+Chrome/Edge 84, Firefox 90, and Safari/iOS 15. Full behavior (the `inert` attribute on
+cloned slides) needs Chrome/Edge 102, Firefox 112, or Safari 15.5; older browsers in the
+supported range degrade gracefully. The host page only needs flexbox and 2D transforms,
+which every supported browser has. Details on the [docs site](https://multislider.trevorblackman.dev/#browsers).
 
 ## License
 
