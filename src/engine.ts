@@ -131,7 +131,7 @@ export class Engine {
 
   startMarquee(speed: number): void {
     this.cancel();
-    if (speed <= 0 || !this.looping) return;
+    if (speed <= 0 || !this.looping || !(this.metrics.contentSize > 0)) return;
     this.#job = { kind: "marquee", speed, last: -1 };
     this.#schedule();
   }

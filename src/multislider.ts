@@ -64,6 +64,8 @@ export class Multislider {
   #nextButton: HTMLElement | null = null;
 
   #mode: Mode;
+  /** Last good head; index is logical (mod originals) so clone count changes cannot shift it. */
+  #head = { index: 0, fraction: 0 };
   #reasons = new Set<PauseReason>();
   #reducedMotion = false;
   #looping = true;
@@ -401,11 +403,14 @@ export class Multislider {
     // reentrant next()/refresh() from an afterchange handler sees fresh metrics.
     const settledDone = this.#engine.settleTween();
 
+    // Only overwrite the stored head from trustworthy geometry. A hidden
+    // container measures all zeros; headAt on zero starts returns the last
+    // index and would teleport the carousel on re-show.
     const previous = this.#engine.metrics;
-    const head =
-      previous.slides.length > 0
-        ? headAt(previous.slides, this.#engine.offset)
-        : { index: 0, fraction: 0 };
+    if (previous.contentSize > 0 && previous.slides.length > 0) {
+      const h = headAt(previous.slides, this.#engine.offset);
+      this.#head = { index: this.#logical(h.index), fraction: h.fraction };
+    }
 
     this.#removeDuplicates();
     let slides = this.#slideElements();
@@ -430,9 +435,17 @@ export class Multislider {
     this.#engine.looping = this.#looping;
     this.#engine.setMetrics(metrics);
     // Re-deriving the offset from the head index keeps the same slide leading
-    // when a breakpoint changes every slide width.
+    // when a breakpoint changes every slide width. Degenerate metrics park at
+    // zero and keep the stored head for the next good measure.
     this.#engine.setOffset(
-      offsetForHead(metrics.slides, head.index, head.fraction, metrics.contentSize)
+      metrics.contentSize > 0
+        ? offsetForHead(
+            metrics.slides,
+            this.#head.index,
+            this.#head.fraction,
+            metrics.contentSize
+          )
+        : 0
     );
 
     // Keep an active drag continuous: rebase its anchor so the next pointermove
@@ -516,7 +529,9 @@ export class Multislider {
 
     const metrics = this.#engine.metrics;
     const total = metrics.slides.length;
-    if (total === 0 || count <= 0) return;
+    // The contentSize guard kills event spam on hidden/zero-size content,
+    // where looping stays true because 0 < 0 + 0 is false.
+    if (total === 0 || count <= 0 || !(metrics.contentSize > 0)) return;
 
     const steps = Math.min(count, total);
     const head = headAt(metrics.slides, this.#engine.offset).index;

@@ -601,6 +601,37 @@ describe("remeasure during motion", () => {
     expect(track.style.transform).toBe("translate3d(-26px, 0, 0)");
   });
 
+  it("survives a display:none round trip without losing its place", () => {
+    useLayout({ viewport: 300, sizes: FIVE });
+    const root = makeMarkup(5);
+    const instance = build(root);
+    instance.next();
+    instance.next();
+    expect(trackOf(root).style.transform).toBe("translate3d(-200px, 0, 0)");
+
+    // hidden: everything measures zero
+    useLayout({ viewport: 0, sizes: [0, 0, 0, 0, 0] });
+    instance.refresh();
+
+    // shown again: same head slide leads
+    useLayout({ viewport: 300, sizes: FIVE });
+    instance.refresh();
+    expect(trackOf(root).style.transform).toBe("translate3d(-200px, 0, 0)");
+  });
+
+  it("fires no change events while everything measures zero", () => {
+    useLayout({ viewport: 300, sizes: FIVE });
+    const root = makeMarkup(5);
+    const instance = build(root);
+    const before = collect(root, "beforechange");
+
+    useLayout({ viewport: 0, sizes: [0, 0, 0, 0, 0] });
+    instance.refresh();
+    instance.next();
+    instance.prev();
+    expect(before).toHaveLength(0);
+  });
+
   it("stops a marquee when a resize disables looping and restarts it after", () => {
     useLayout({ viewport: 300, sizes: FIVE });
     const root = makeMarkup(5);
