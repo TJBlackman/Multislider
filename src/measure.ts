@@ -27,17 +27,32 @@ export function readBox(el: HTMLElement): BoxGeometry {
   };
 }
 
+/** Flex column gap of the track in px. "normal" and unset resolve to 0. */
+export function readGap(el: HTMLElement, trackWidth: number): number {
+  const style = el.ownerDocument.defaultView?.getComputedStyle(el);
+  if (!style) return 0;
+  const raw = style.columnGap;
+  const value = parseFloat(raw);
+  if (!Number.isFinite(value) || value <= 0) return 0;
+  return raw.trim().endsWith("%") ? (value / 100) * trackWidth : value;
+}
+
 /**
  * Slide positions come from rect differences against the track, never from summing sizes,
  * so a wrong measurement cannot accumulate. Both rects carry the track's own transform,
  * which cancels in the subtraction. Per slide wrap transforms do not cancel, so the caller
  * clears them before reading.
+ *
+ * The track's flex gap folds into each slide's outer size, like a trailing
+ * margin, so contentSize stays the true wrap period (one gap per joint,
+ * including the seam) and every downstream function works unchanged.
  */
 export function buildMetrics(
   track: BoxGeometry,
   slides: readonly HTMLElement[],
   boxes: readonly BoxGeometry[],
-  rtl: boolean
+  rtl: boolean,
+  gap = 0
 ): Metrics {
   const out: SlideMetric[] = [];
   let contentSize = 0;
@@ -47,7 +62,7 @@ export function buildMetrics(
     const el = slides[i];
     const box = boxes[i];
     if (!el || !box) continue;
-    const size = box.width + box.marginLeft + box.marginRight;
+    const size = box.width + box.marginLeft + box.marginRight + gap;
     const start = rtl
       ? track.right - box.right - box.marginRight
       : box.left - track.left - box.marginLeft;

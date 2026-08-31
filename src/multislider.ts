@@ -7,6 +7,7 @@ import {
   offsetForHead,
   pageRun,
   readBox,
+  readGap,
   runDistance,
   wrappedPosition,
 } from "./measure";
@@ -388,8 +389,9 @@ export class Multislider {
     // Wrap transforms move a slide's rect, so clear them before reading in this same frame.
     for (const slide of slides) slide.style.transform = "";
     const trackBox: BoxGeometry = readBox(this.#track);
+    const gap = readGap(this.#track, trackBox.width);
     const boxes = slides.map(readBox);
-    return buildMetrics(trackBox, slides, boxes, this.#rtl);
+    return buildMetrics(trackBox, slides, boxes, this.#rtl, gap);
   }
 
   #measure(): void {

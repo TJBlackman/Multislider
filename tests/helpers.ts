@@ -5,11 +5,14 @@ export interface LayoutConfig {
   viewport: number;
   /** Sizes of the original slides. Duplicates repeat the same cycle. */
   sizes: number[];
+  /** Flex column gap of the track. Injected through the computed style seam. */
+  gap?: number;
   rtl?: boolean;
 }
 
 let layout: LayoutConfig | null = null;
 const nativeRect = Element.prototype.getBoundingClientRect;
+const nativeGetComputedStyle = globalThis.getComputedStyle;
 
 function rect(left: number, width: number): DOMRect {
   const value = {
@@ -41,8 +44,9 @@ function fakeRect(this: Element): DOMRect {
   const parent = element.parentElement;
   if (parent && parent.classList.contains("ms-track")) {
     const index = Array.prototype.indexOf.call(parent.children, element);
+    const gap = config.gap ?? 0;
     let run = 0;
-    for (let i = 0; i < index; i++) run += sizeAt(config, i);
+    for (let i = 0; i < index; i++) run += sizeAt(config, i) + gap;
     const size = sizeAt(config, index);
     return config.rtl
       ? rect(config.viewport - run - size, size)
@@ -52,14 +56,36 @@ function fakeRect(this: Element): DOMRect {
   return rect(0, 0);
 }
 
+// jsdom does not expand the `gap` shorthand into columnGap, so gap is injected
+// here instead of via inline styles. Real browsers do expand it.
+function fakeGetComputedStyle(
+  element: Element,
+  pseudo?: string | null
+): CSSStyleDeclaration {
+  const native = nativeGetComputedStyle(element, pseudo);
+  const config = layout;
+  if (!config?.gap || !(element as HTMLElement).classList?.contains("ms-track")) {
+    return native;
+  }
+  return new Proxy(native, {
+    get(target, prop) {
+      if (prop === "columnGap") return `${config.gap}px`;
+      const value = Reflect.get(target, prop);
+      return typeof value === "function" ? value.bind(target) : value;
+    },
+  });
+}
+
 export function useLayout(config: LayoutConfig): void {
   layout = config;
   Element.prototype.getBoundingClientRect = fakeRect;
+  globalThis.getComputedStyle = fakeGetComputedStyle;
 }
 
 export function resetLayout(): void {
   layout = null;
   Element.prototype.getBoundingClientRect = nativeRect;
+  globalThis.getComputedStyle = nativeGetComputedStyle;
 }
 
 /** Deterministic frame clock so tween, marquee and momentum can be stepped by hand. */

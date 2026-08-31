@@ -6,6 +6,7 @@ import {
   normalizeOffset,
   offsetForHead,
   pageRun,
+  readGap,
   runDistance,
   wrapState,
   wrappedPosition,
@@ -211,5 +212,64 @@ describe("buildMetrics", () => {
   it("skips slides with no matching box", () => {
     const metrics = buildMetrics(box(0, 300), elements, [box(0, 100)], false);
     expect(metrics.slides).toHaveLength(1);
+  });
+
+  it("folds the track's flex gap into each slide size", () => {
+    const track = box(0, 200);
+    const metrics = buildMetrics(
+      track,
+      elements,
+      [box(0, 100), box(110, 150), box(270, 80)],
+      false,
+      10
+    );
+    expect(metrics.slides.map((s) => s.size)).toEqual([110, 160, 90]);
+    expect(metrics.slides.map((s) => s.start)).toEqual([0, 110, 270]);
+    expect(metrics.contentSize).toBe(360);
+    expect(metrics.maxSlideSize).toBe(160);
+    // the load bearing invariant: each start is the cumsum of prior sizes
+    let run = 0;
+    for (const slide of metrics.slides) {
+      expect(slide.start).toBe(run);
+      run += slide.size;
+    }
+  });
+
+  it("keeps gap and margins additive, and matches in RTL", () => {
+    const withMargin = buildMetrics(
+      box(0, 300),
+      [elements[0]!],
+      [box(10, 100, 10)],
+      false,
+      10
+    );
+    expect(withMargin.slides[0]?.size).toBe(130);
+
+    const rtl = buildMetrics(
+      box(0, 200),
+      elements,
+      [box(100, 100), box(-60, 150), box(-150, 80)],
+      true,
+      10
+    );
+    expect(rtl.slides.map((s) => s.start)).toEqual([0, 110, 270]);
+    expect(rtl.contentSize).toBe(360);
+  });
+});
+
+describe("readGap", () => {
+  it("resolves px, percent, unset and garbage", () => {
+    const el = document.createElement("div");
+    document.body.appendChild(el);
+
+    expect(readGap(el, 300)).toBe(0); // unset computes to "normal"
+
+    el.style.columnGap = "16px";
+    expect(readGap(el, 300)).toBe(16);
+
+    el.style.columnGap = "5%";
+    expect(readGap(el, 300)).toBe(15);
+
+    el.remove();
   });
 });

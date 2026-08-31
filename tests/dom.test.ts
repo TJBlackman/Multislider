@@ -502,6 +502,39 @@ describe("refresh and resize", () => {
   });
 });
 
+describe("flex gap on the track", () => {
+  it("steps by slide size plus gap and wraps at the gapped period", () => {
+    useLayout({ viewport: 200, sizes: [100, 150, 80], gap: 10 });
+    const root = makeMarkup(3);
+    build(root);
+    const track = trackOf(root);
+
+    // contentSize 360 satisfies the loop guard (200 + 160), so no clones
+    expect(track.children).toHaveLength(3);
+
+    // the slide fully right of the viewport wraps back by the full period
+    const last = track.children[2] as HTMLElement;
+    expect(last.style.transform).toBe("translateX(-360px)");
+
+    slider!.next();
+    expect(track.style.transform).toBe("translate3d(-110px, 0, 0)");
+    slider!.next();
+    expect(track.style.transform).toBe("translate3d(-270px, 0, 0)");
+    slider!.next(); // full cycle: 110 + 160 + 90 = 360 wraps to 0
+    expect(track.style.transform).toBe("translate3d(0px, 0, 0)");
+  });
+
+  it("handles gap in RTL with the same logical metrics", () => {
+    useLayout({ viewport: 200, sizes: [100, 150, 80], gap: 10, rtl: true });
+    const root = makeMarkup(3);
+    build(root, { direction: "rtl" });
+    const track = trackOf(root);
+
+    slider!.next();
+    expect(track.style.transform).toBe("translate3d(110px, 0, 0)");
+  });
+});
+
 describe("remeasure during motion", () => {
   it("settles a mid-flight tween into the new geometry without a zombie frame", () => {
     useLayout({ viewport: 300, sizes: FIVE });
