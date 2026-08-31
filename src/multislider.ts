@@ -1,8 +1,10 @@
 import { Engine } from "./engine";
 import {
   buildMetrics,
+  deltaToBoundary,
   headAt,
   modIndex,
+  normalizeOffset,
   normalizeOptions,
   offsetForHead,
   pageRun,
@@ -635,9 +637,19 @@ export class Multislider {
     };
     if (!this.#emit("beforechange", detail, true)) return;
 
-    const distance = runDistance(metrics.slides, head, steps, direction);
+    // Tween to the measured boundary, never by summed sizes: every step lands
+    // exactly on slides[target].start, so float error cannot accumulate and a
+    // fractional offset left by an interrupted momentum or marquee
+    // self-realigns on the next step.
+    const start = metrics.slides[target]?.start ?? 0;
+    const delta = deltaToBoundary(
+      this.#engine.offset,
+      start,
+      direction,
+      metrics.contentSize
+    );
     this.#resetAutoplay();
-    this.#engine.tween(direction * distance, this.#duration(), () => {
+    this.#engine.tween(delta, this.#duration(), () => {
       this.#emit("afterchange", detail);
       this.#syncLoop();
     });
@@ -889,9 +901,17 @@ export class Multislider {
       // wall, where motion would pin early and idle out the duration.
       target = Math.min(Math.max(target, 0), this.#maxOffset(metrics));
     }
-    this.#engine.tween(target - this.#engine.offset, this.#duration(), () =>
-      this.#syncLoop()
-    );
+    let delta = target - this.#engine.offset;
+    if (this.#looping) {
+      // Shortest wrapped path. The correction is under half a slide and the
+      // loop guard keeps every slide strictly under contentSize, so the
+      // magnitude is strictly under contentSize / 2 and the seam-promoted
+      // head ({0, 0} at an offset near contentSize) resolves to a tiny
+      // forward nudge instead of a full revolution.
+      delta = normalizeOffset(delta, metrics.contentSize);
+      if (delta > metrics.contentSize / 2) delta -= metrics.contentSize;
+    }
+    this.#engine.tween(delta, this.#duration(), () => this.#syncLoop());
   }
 
   #blockNextClick(): void {

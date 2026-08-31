@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   buildMetrics,
+  deltaToBoundary,
   headAt,
   modIndex,
   normalizeOffset,
@@ -254,6 +255,37 @@ describe("buildMetrics", () => {
     );
     expect(rtl.slides.map((s) => s.start)).toEqual([0, 110, 270]);
     expect(rtl.contentSize).toBe(360);
+  });
+});
+
+describe("headAt boundary tolerance", () => {
+  const S = slides([100, 100, 100, 100, 100]);
+
+  it("promotes an offset a few ulps below a boundary to that boundary", () => {
+    expect(headAt(S, 299.9999999)).toEqual({ index: 3, fraction: 0 });
+  });
+
+  it("promotes across the wrap seam to slide zero", () => {
+    expect(headAt(S, 499.9999999)).toEqual({ index: 0, fraction: 0 });
+  });
+
+  it("leaves offsets outside the tolerance alone", () => {
+    const head = headAt(S, 299.4);
+    expect(head.index).toBe(2);
+    expect(head.fraction).toBeCloseTo(0.994);
+  });
+});
+
+describe("deltaToBoundary", () => {
+  it("moves forward and backward to a wrapped boundary", () => {
+    expect(deltaToBoundary(0, 100, 1, 500)).toBe(100);
+    expect(deltaToBoundary(0, 400, -1, 500)).toBe(-100);
+  });
+
+  it("maps a zero or sub-epsilon residue to a full revolution", () => {
+    expect(deltaToBoundary(0, 0, 1, 500)).toBe(500);
+    expect(deltaToBoundary(299.9999999, 300, 1, 500)).toBeCloseTo(500, 5);
+    expect(deltaToBoundary(100.3, 100, -1, 500)).toBeCloseTo(-500.3);
   });
 });
 

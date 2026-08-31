@@ -109,21 +109,54 @@ export function wrapState(
   return 0;
 }
 
+// px; boundary landings are exact to ulps, real slides are far wider
+export const BOUNDARY_EPS = 0.5;
+
 /** The slide covering the viewport start, plus how far into it the offset sits. */
 export function headAt(
   slides: readonly SlideMetric[],
   offset: number
 ): { index: number; fraction: number } {
-  if (slides.length === 0) return { index: 0, fraction: 0 };
-  for (let i = slides.length - 1; i >= 0; i--) {
+  const n = slides.length;
+  if (n === 0) return { index: 0, fraction: 0 };
+  // Within EPS below the wrap seam counts as slide 0 at fraction 0.
+  const last = slides[n - 1];
+  if (last && offset >= last.start + last.size - BOUNDARY_EPS) {
+    return { index: 0, fraction: 0 };
+  }
+  for (let i = n - 1; i >= 0; i--) {
     const slide = slides[i];
     if (!slide) continue;
-    if (offset >= slide.start) {
+    // EPS below a boundary counts as that boundary, so a landing a few
+    // ulps short of slides[i].start reports index i, fraction 0.
+    if (offset >= slide.start - BOUNDARY_EPS) {
       const raw = slide.size > 0 ? (offset - slide.start) / slide.size : 0;
       return { index: i, fraction: Math.min(Math.max(raw, 0), 0.999999) };
     }
   }
   return { index: 0, fraction: 0 };
+}
+
+/**
+ * Signed tween delta from `offset` to the wrapped boundary `target`, walking
+ * in `direction`. Magnitudes land in (EPS, contentSize + EPS]: a residue of
+ * EPS or less means the offset already sits on the target boundary (a full
+ * cycle was requested, or the head was promoted across a sub EPS gap), so it
+ * maps to one whole revolution and the landing normalizes onto the boundary
+ * exactly.
+ */
+export function deltaToBoundary(
+  offset: number,
+  target: number,
+  direction: 1 | -1,
+  contentSize: number
+): number {
+  if (!(contentSize > 0)) return 0;
+  const d =
+    direction === 1
+      ? normalizeOffset(target - offset, contentSize)
+      : normalizeOffset(offset - target, contentSize);
+  return direction * (d <= BOUNDARY_EPS ? d + contentSize : d);
 }
 
 export function offsetForHead(

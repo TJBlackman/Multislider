@@ -730,6 +730,37 @@ describe("remeasure during motion", () => {
     expect(track.style.transform).toBe("translate3d(-26px, 0, 0)");
   });
 
+  it("completes a step to the measured boundary from a marquee offset", () => {
+    useLayout({ viewport: 300, sizes: FIVE });
+    const root = makeMarkup(5);
+    const instance = build(root, { mode: "marquee", speed: 1000 });
+    const before = collect(root, "beforechange");
+
+    raf.step(16); // seeds the marquee clock
+    raf.step(60); // 60px at 1000px/s
+    expect(trackOf(root).style.transform).toBe("translate3d(-60px, 0, 0)");
+
+    instance.next();
+    // boundary targeted: lands exactly on slide 1, not 60 + 100
+    expect(trackOf(root).style.transform).toBe("translate3d(-100px, 0, 0)");
+    expect(before[0]!.detail as ChangeDetail).toMatchObject({ from: 0, to: 1 });
+  });
+
+  it("treats next(total) as one full revolution", () => {
+    useLayout({ viewport: 300, sizes: FIVE });
+    const root = makeMarkup(5);
+    const instance = build(root);
+    const before = collect(root, "beforechange");
+
+    instance.next(5);
+    expect(trackOf(root).style.transform).toBe("translate3d(0px, 0, 0)");
+    expect(before[0]!.detail as ChangeDetail).toMatchObject({
+      from: 0,
+      to: 0,
+      count: 5,
+    });
+  });
+
   it("survives a display:none round trip without losing its place", () => {
     useLayout({ viewport: 300, sizes: FIVE });
     const root = makeMarkup(5);

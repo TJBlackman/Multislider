@@ -161,6 +161,22 @@ describe("drag", () => {
     expect(drag.defaultPrevented).toBe(false);
   });
 
+  it("lands the next step on a boundary even from live momentum", () => {
+    const { track } = setup();
+    track.dispatchEvent(pointer("pointerdown", 200, 8));
+    window.dispatchEvent(pointer("pointermove", 160, 24)); // velocity 2.5 px/ms
+    window.dispatchEvent(pointer("pointerup", 160, 40));
+
+    raf.step(16); // seeds the momentum clock
+    raf.step(16); // 2.5 px/ms * 16ms
+    expect(track.style.transform).toBe("translate3d(-80px, 0, 0)");
+
+    slider!.next();
+    expect(track.style.transform).toBe("translate3d(-100px, 0, 0)");
+    raf.run(5); // no zombie momentum frames
+    expect(track.style.transform).toBe("translate3d(-100px, 0, 0)");
+  });
+
   it("settles without momentum when the gesture is canceled", () => {
     const { track } = setup();
     track.dispatchEvent(pointer("pointerdown", 200, 0));
