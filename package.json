@@ -20,16 +20,24 @@
     "zero-dependency"
   ],
   "type": "module",
-  "sideEffects": false,
+  "sideEffects": [
+    "./dist/multislider.global.js"
+  ],
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "unpkg": "./dist/multislider.global.js",
+  "jsdelivr": "./dist/multislider.global.js",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./global": {
+      "types": "./dist/global.d.ts",
       "default": "./dist/multislider.global.js"
-    }
+    },
+    "./package.json": "./package.json"
   },
   "files": [
     "dist"

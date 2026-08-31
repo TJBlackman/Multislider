@@ -3,7 +3,7 @@ import { defineConfig } from "tsup";
 // tsup's bundled rollup-plugin-dts needs the TypeScript 5 compiler API, which the
 // installed TypeScript 7 no longer exposes, so tsc emits the declarations instead.
 const emitTypes = [
-  "tsc src/index.ts",
+  "tsc src/index.ts src/global.ts",
   "--ignoreConfig",
   "--declaration --emitDeclarationOnly --outDir dist",
   "--target es2022 --module esnext --moduleResolution bundler",
