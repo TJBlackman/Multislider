@@ -437,6 +437,25 @@ describe("autoplay and marquee", () => {
     raf.step(50);
     expect(trackOf(root).style.transform).toBe("translate3d(-150px, 0, 0)");
   });
+
+  it("snaps to a slide boundary when leaving marquee mode mid slide", () => {
+    useLayout({ viewport: 300, sizes: FIVE });
+    const root = makeMarkup(5);
+    const instance = build(root, { mode: "marquee", speed: 1000 });
+
+    raf.step(0);
+    raf.step(70); // 70px: fraction 0.7 of slide 0
+    expect(trackOf(root).style.transform).toBe("translate3d(-70px, 0, 0)");
+
+    instance.setMode("step");
+    expect(trackOf(root).style.transform).toBe("translate3d(-100px, 0, 0)");
+
+    instance.setMode("marquee");
+    raf.step(0);
+    raf.step(40); // fraction 0.4 snaps back
+    instance.setMode("step");
+    expect(trackOf(root).style.transform).toBe("translate3d(-100px, 0, 0)");
+  });
 });
 
 describe("loop guard", () => {

@@ -192,6 +192,12 @@ export class Multislider {
     this.#engine.cancel();
     this.#mode = next;
     this.#stopAutoplay();
+    // A marquee cancels at an arbitrary offset and step mode must rest on a
+    // boundary. Skip during a drag; pointerup snaps with fresher intent.
+    if (next === "step" && this.#drag === null) {
+      this.#snap();
+      return;
+    }
     this.#syncLoop();
   }
 
