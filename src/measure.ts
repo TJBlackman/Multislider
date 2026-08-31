@@ -241,5 +241,6 @@ export function normalizeOptions(options: MultisliderOptions = {}): ResolvedOpti
       options.direction === "ltr" || options.direction === "rtl"
         ? options.direction
         : "auto",
+    maxClones: Math.floor(toNonNegative(options.maxClones, 600)),
   };
 }

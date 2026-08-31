@@ -16,6 +16,7 @@ describe("normalizeOptions", () => {
       draggable: true,
       respectReducedMotion: true,
       direction: "auto",
+      maxClones: 600,
     });
   });
 
@@ -32,8 +33,18 @@ describe("normalizeOptions", () => {
       draggable: false,
       respectReducedMotion: false,
       direction: "rtl",
+      maxClones: 12,
     };
     expect(normalizeOptions(options)).toEqual(options);
+  });
+
+  it("normalizes maxClones to a whole non-negative count", () => {
+    expect(normalizeOptions({ maxClones: 0 }).maxClones).toBe(0);
+    expect(normalizeOptions({ maxClones: 7.9 }).maxClones).toBe(7);
+    expect(normalizeOptions({ maxClones: -5 }).maxClones).toBe(0);
+    expect(
+      normalizeOptions({ maxClones: Number.NaN }).maxClones
+    ).toBe(600);
   });
 
   it("falls back to defaults for unknown enum values", () => {

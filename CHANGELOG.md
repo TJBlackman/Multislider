@@ -52,6 +52,9 @@ an IIFE build. Everything from `2.0.0-beta.0` plus the hardening pass below.
 - Slides get `role="group"`, `aria-roledescription="slide"`, and positional
   labels; the track manages `aria-live` (`"off"` while auto-rotating,
   `"polite"` otherwise) per the WAI-ARIA carousel pattern.
+- `maxClones` option (default 600): cap on cloned slide elements added for
+  endless looping. `0` disables cloning entirely and the slider clamps at the
+  ends instead.
 - `@tjblackman/multislider/global` subpath for the IIFE build, typed via
   `dist/global.d.ts` (also types `window.Multislider`).
 

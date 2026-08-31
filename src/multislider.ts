@@ -33,7 +33,6 @@ const CLONE_ATTR = "data-ms-clone";
 const DRAG_THRESHOLD = 4; // px before a pointer gesture counts as a drag
 const CLICK_BLOCK_MS = 300;
 const STALE_MS = 80; // velocity older than this at release means the finger had stopped
-const MAX_SLIDE_ELEMENTS = 600; // cap on originals plus clones across all sets
 const MAX_GUARD_PASSES = 3;
 const GUARD_EPS = 0.5; // px: loop guard tolerance, edge detection, progress check
 
@@ -470,9 +469,9 @@ export class Multislider {
       let copies = Math.max(1, Math.ceil(shortfall / perSet));
       copies = Math.min(
         copies,
-        Math.floor((MAX_SLIDE_ELEMENTS - slides.length) / n)
+        Math.floor((this.#options.maxClones - this.#duplicates.length) / n)
       );
-      if (copies <= 0) break; // cap hit
+      if (copies <= 0) break; // clone budget spent
 
       const before = metrics.contentSize;
       this.#addDuplicates(copies);

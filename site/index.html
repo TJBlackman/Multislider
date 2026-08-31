@@ -214,7 +214,8 @@
               your slides do not add up to that, the library duplicates the whole set as many times
               as the viewport needs, marks the copies <code>aria-hidden="true"</code> and
               <code>inert</code>, and carries on. Three logos on an ultrawide monitor might clone
-              six sets; the total is capped at 600 slide elements. Past that cap looping turns off,
+              six sets; the clone count is capped by the <code>maxClones</code> option (default
+              600). Past that cap looping turns off,
               the copies are removed, the slider clamps at the ends with autoplay rewinding to the
               start, and a warning goes to the console. This is the only case where anything gets
               cloned.
@@ -392,6 +393,15 @@ const slider = new Multislider('#mySlider', {
                     <td>
                       <code>auto</code> reads the computed <code>direction</code> of the root. RTL
                       flips every movement.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><code>maxClones</code></td>
+                    <td><code>number</code></td>
+                    <td><code>600</code></td>
+                    <td>
+                      Cap on cloned slide elements added for endless looping. <code>0</code> means
+                      never clone; the slider clamps at the ends instead.
                     </td>
                   </tr>
                 </tbody>

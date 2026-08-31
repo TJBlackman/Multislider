@@ -506,6 +506,28 @@ describe("loop guard", () => {
     expect(warn).not.toHaveBeenCalled();
   });
 
+  it("respects a small maxClones budget and falls back to clamped mode", () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    // needs 6 clone sets (18 clones); a budget of 3 cannot get there
+    useLayout({ viewport: 3840, sizes: [200, 200, 200] });
+    const root = makeMarkup(3);
+    build(root, { maxClones: 3 });
+
+    expect(root.querySelectorAll("[data-ms-clone]")).toHaveLength(0);
+    expect(trackOf(root).children).toHaveLength(3);
+    expect(warn).toHaveBeenCalledTimes(1);
+  });
+
+  it("never clones with maxClones 0", () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    useLayout({ viewport: 300, sizes: [100, 100, 100] }); // would clone one set
+    const root = makeMarkup(3);
+    build(root, { maxClones: 0 });
+
+    expect(trackOf(root).children).toHaveLength(3);
+    expect(warn).toHaveBeenCalledTimes(1);
+  });
+
   it("disables looping, warns once, and drops clones at the element cap", () => {
     const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
     useLayout({ viewport: 8000, sizes: [10, 10, 10] });
@@ -585,12 +607,12 @@ describe("settle event", () => {
 });
 
 describe("clamped mode", () => {
-  // 301 originals block even one clone set under the 600 element cap while
-  // content (6020) still exceeds the viewport (6010), so max offset is 10.
+  // maxClones: 0 forbids the clone set the guard would want, while content
+  // (400) still exceeds the viewport (300), so max offset is 100.
   function clampedSetup(options = {}) {
-    useLayout({ viewport: 6010, sizes: Array(301).fill(20) });
-    const root = makeMarkup(301);
-    const instance = build(root, options);
+    useLayout({ viewport: 300, sizes: [200, 200] });
+    const root = makeMarkup(2);
+    const instance = build(root, { maxClones: 0, ...options });
     return { root, instance, track: trackOf(root) };
   }
 
@@ -600,7 +622,7 @@ describe("clamped mode", () => {
     const before = collect(root, "beforechange");
 
     instance.next();
-    expect(track.style.transform).toBe("translate3d(-10px, 0, 0)");
+    expect(track.style.transform).toBe("translate3d(-100px, 0, 0)");
     expect(before).toHaveLength(1);
     expect(before[0]!.detail as ChangeDetail).toMatchObject({
       direction: 1,
@@ -608,7 +630,7 @@ describe("clamped mode", () => {
     });
 
     instance.next(); // pinned at the wall: no motion, no events
-    expect(track.style.transform).toBe("translate3d(-10px, 0, 0)");
+    expect(track.style.transform).toBe("translate3d(-100px, 0, 0)");
     expect(before).toHaveLength(1);
 
     instance.prev();
@@ -625,7 +647,7 @@ describe("clamped mode", () => {
       const after = collect(root, "afterchange");
 
       vi.advanceTimersByTime(100); // advances to the wall
-      expect(track.style.transform).toBe("translate3d(-10px, 0, 0)");
+      expect(track.style.transform).toBe("translate3d(-100px, 0, 0)");
 
       vi.advanceTimersByTime(100); // rewinds as a single backward transition
       expect(track.style.transform).toBe("translate3d(0px, 0, 0)");

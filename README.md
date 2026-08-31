@@ -82,7 +82,7 @@ new Multislider('#logos', { mode: 'marquee', speed: 40 });
 Full reference on the [docs site](https://multislider.trevorblackman.dev). The short version:
 
 - Options include `mode`, `advanceBy`, `interval`, `duration`, `speed`, `hoverPause`, `pauseAbove`,
-  `pauseBelow`, `draggable`, `respectReducedMotion`, and `direction`.
+  `pauseBelow`, `draggable`, `respectReducedMotion`, `direction`, and `maxClones`.
 - Methods include `next()`, `prev()`, `nextPage()`, `prevPage()`, `pause()`, `play()`, `refresh()`,
   `setMode()`, and `destroy()`.
 - Events are native bubbling `CustomEvent`s on the root element: `multislider:beforechange`

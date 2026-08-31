@@ -25,6 +25,11 @@ export interface MultisliderOptions {
   draggable?: boolean;
   respectReducedMotion?: boolean;
   direction?: DirectionOption;
+  /**
+   * Cap on cloned slide elements added to satisfy the loop guard.
+   * 0 disables cloning entirely; the guard then falls back to clamped mode.
+   */
+  maxClones?: number;
 }
 
 export interface ResolvedOptions {
@@ -39,6 +44,7 @@ export interface ResolvedOptions {
   draggable: boolean;
   respectReducedMotion: boolean;
   direction: DirectionOption;
+  maxClones: number;
 }
 
 export interface ChangeDetail {
