@@ -567,6 +567,29 @@ describe("remeasure during motion", () => {
     window.dispatchEvent(pointer("pointermove", 149, 40));
     expect(track.style.transform).toBe("translate3d(-26px, 0, 0)");
   });
+
+  it("stops a marquee when a resize disables looping and restarts it after", () => {
+    useLayout({ viewport: 300, sizes: FIVE });
+    const root = makeMarkup(5);
+    const instance = build(root, { mode: "marquee", speed: 60 });
+    raf.run(3);
+    const moving = trackOf(root).style.transform;
+    expect(moving).not.toBe("translate3d(0px, 0, 0)");
+
+    // shrink content so even duplication cannot satisfy the loop guard
+    useLayout({ viewport: 300, sizes: [10, 10, 10, 10, 10] });
+    instance.refresh();
+    const pinned = trackOf(root).style.transform;
+    raf.run(3);
+    expect(trackOf(root).style.transform).toBe(pinned);
+    expect(raf.pending).toBe(0);
+
+    // growing content back re-enables looping and the marquee resumes
+    useLayout({ viewport: 300, sizes: FIVE });
+    instance.refresh();
+    raf.run(3);
+    expect(trackOf(root).style.transform).not.toBe(pinned);
+  });
 });
 
 describe("focus", () => {

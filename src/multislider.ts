@@ -575,6 +575,11 @@ export class Multislider {
         if (this.#engine.jobKind === "marquee") this.#engine.cancel();
         return;
       }
+      // A resize can flip #looping while a marquee runs; the clamp then pins
+      // the offset at max and the job spins forever doing no-op renders.
+      if (this.#engine.jobKind === "marquee" && !this.#looping) {
+        this.#engine.cancel();
+      }
       if (this.#engine.jobKind === null && this.#looping) {
         this.#engine.startMarquee(this.#options.speed);
       }
