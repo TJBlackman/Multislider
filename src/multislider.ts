@@ -427,6 +427,12 @@ export class Multislider {
       offsetForHead(metrics.slides, head.index, head.fraction, metrics.contentSize)
     );
     this.#engine.render();
+
+    // A focused slide removed by a content swap fires no focusout in some
+    // browsers, which would hold the "focus" pause forever.
+    if (!this.#root.contains(this.#root.ownerDocument.activeElement)) {
+      this.#removeReason("focus");
+    }
   }
 
   #addDuplicates(): void {
@@ -598,7 +604,7 @@ export class Multislider {
   };
 
   #onFocusIn = (event: FocusEvent): void => {
-    this.#addReason("hover");
+    this.#addReason("focus");
     const target = event.target;
     if (!(target instanceof Element) || !this.#track.contains(target)) return;
     this.#revealSlideOf(target);
@@ -607,7 +613,7 @@ export class Multislider {
   #onFocusOut = (event: FocusEvent): void => {
     const next = event.relatedTarget;
     if (next instanceof Node && this.#root.contains(next)) return;
-    this.#removeReason("hover");
+    this.#removeReason("focus");
   };
 
   #revealSlideOf(target: Element): void {

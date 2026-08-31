@@ -7,6 +7,7 @@ export type DirectionOption = "auto" | "ltr" | "rtl";
 export type PauseReason =
   | "api"
   | "hover"
+  | "focus"
   | "media"
   | "hidden"
   | "drag"

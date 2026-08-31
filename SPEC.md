@@ -82,7 +82,7 @@ One engine serves step, page, marquee, and drag:
 - Render each frame: `track.style.transform = translate3d(-offset px, 0, 0)` (sign flipped for RTL). For each slide compute `p = start - offset`; if the slide is fully left of the viewport give it its own `translateX(contentSize)`, if fully right give `translateX(-contentSize)`, otherwise clear. Only write styles when the wrap state changes. No cloning, no DOM reordering, ever (exception below).
 - `next`: tween `offset` by the head slide's size. `prev`: by the previous slide's size. Page: by the computed run. Marquee: `offset += speed * dt` inside the rAF loop. Drag: `offset = offsetAtPointerDown - dx`, then momentum and snap.
 - Tween easing: ease in out cubic; linear for marquee.
-- Pause is a `Set<PauseReason>` with reasons `"api" | "hover" | "media" | "hidden" | "drag" | "reduced-motion"`. Frames are only scheduled while the set is empty (explicit `next()`/`prev()`/drag override pausing for their own animation, mirroring v1's overRidePause). Resume reseeds the rAF timestamp.
+- Pause is a `Set<PauseReason>` with reasons `"api" | "hover" | "focus" | "media" | "hidden" | "drag" | "reduced-motion"`. Frames are only scheduled while the set is empty (explicit `next()`/`prev()`/drag override pausing for their own animation, mirroring v1's overRidePause). Resume reseeds the rAF timestamp.
 - `document.visibilitychange` adds/removes `"hidden"`.
 - ResizeObserver on viewport and track, coalesced to one rAF; after remeasure, re-derive `offset` from the logical head index plus fraction so the same slide stays leading across breakpoint changes.
 - Measurement: `slideRect.left - trackRect.left` with wrap transforms accounted for (or zeroed in the same frame). Never `offsetWidth`. Never accumulate `start` by summing; recompute from rects each measure pass.
@@ -93,7 +93,7 @@ One engine serves step, page, marquee, and drag:
 
 - Root gets `aria-roledescription="carousel"` and `role="region"` (plus `aria-label="slideshow"` only if the user provided no label).
 - Buttons without accessible names get `aria-label="Previous slide"` / `"Next slide"`.
-- Autoplay pauses on `focusin` within the root (treated like hover) and resumes on `focusout`.
+- Autoplay pauses on `focusin` within the root (its own `"focus"` reason, independent of hover, and active even with `hoverPause: false`) and resumes on `focusout`.
 - Keyboard: ArrowLeft/ArrowRight trigger prev/next when focus is on the root or the buttons.
 
 ## File layout

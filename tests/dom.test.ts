@@ -462,6 +462,72 @@ describe("focus", () => {
     root.dispatchEvent(new FocusEvent("focusout", { bubbles: true }));
     expect(instance.paused).toBe(false);
   });
+
+  it("keeps the focus pause when a pointer enters and leaves", () => {
+    useLayout({ viewport: 300, sizes: FIVE });
+    const root = makeMarkup(5);
+    const instance = build(root);
+    const viewport = root.querySelector<HTMLElement>(".MS-content")!;
+
+    root.dispatchEvent(new FocusEvent("focusin", { bubbles: true }));
+    viewport.dispatchEvent(new Event("pointerenter"));
+    viewport.dispatchEvent(new Event("pointerleave"));
+    expect(instance.paused).toBe(true);
+
+    root.dispatchEvent(new FocusEvent("focusout", { bubbles: true }));
+    expect(instance.paused).toBe(false);
+  });
+
+  it("keeps the hover pause when focus enters and leaves", () => {
+    useLayout({ viewport: 300, sizes: FIVE });
+    const root = makeMarkup(5);
+    const instance = build(root);
+    const viewport = root.querySelector<HTMLElement>(".MS-content")!;
+
+    viewport.dispatchEvent(new Event("pointerenter"));
+    root.dispatchEvent(new FocusEvent("focusin", { bubbles: true }));
+    root.dispatchEvent(new FocusEvent("focusout", { bubbles: true }));
+    expect(instance.paused).toBe(true);
+
+    viewport.dispatchEvent(new Event("pointerleave"));
+    expect(instance.paused).toBe(false);
+  });
+
+  it("pauses on focus even with hoverPause disabled", () => {
+    useLayout({ viewport: 300, sizes: FIVE });
+    const root = makeMarkup(5);
+    const instance = build(root, { hoverPause: false });
+
+    root.dispatchEvent(new FocusEvent("focusin", { bubbles: true }));
+    expect(instance.paused).toBe(true);
+    root.dispatchEvent(new FocusEvent("focusout", { bubbles: true }));
+    expect(instance.paused).toBe(false);
+  });
+
+  it('reports "focus" in the pause event detail', () => {
+    useLayout({ viewport: 300, sizes: FIVE });
+    const root = makeMarkup(5);
+    build(root);
+    const paused = collect(root, "pause");
+
+    root.dispatchEvent(new FocusEvent("focusin", { bubbles: true }));
+    expect(paused).toHaveLength(1);
+    expect((paused[0]!.detail as PauseDetail).reasons).toEqual(["focus"]);
+  });
+
+  it("drops a stale focus pause on refresh when focus left without focusout", () => {
+    useLayout({ viewport: 300, sizes: FIVE });
+    const root = makeMarkup(5);
+    const instance = build(root);
+
+    // Synthetic focusin with document.activeElement still on body models a
+    // focused slide being removed without any focusout firing.
+    root.dispatchEvent(new FocusEvent("focusin", { bubbles: true }));
+    expect(instance.paused).toBe(true);
+
+    instance.refresh();
+    expect(instance.paused).toBe(false);
+  });
 });
 
 describe("rtl", () => {
