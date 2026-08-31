@@ -191,6 +191,19 @@ export class Engine {
       job.last = now;
       this.setOffset(this.offset + job.velocity * dt);
       this.render();
+      // Pinned against a clamped edge with outward velocity: finish now
+      // instead of waiting ~1s for friction to decay a velocity going nowhere.
+      if (!this.looping) {
+        const max = Math.max(0, this.metrics.contentSize - this.metrics.viewportSize);
+        if (
+          (this.offset <= 0 && job.velocity < 0) ||
+          (this.offset >= max && job.velocity > 0)
+        ) {
+          this.#job = null;
+          job.done?.();
+          return;
+        }
+      }
       job.velocity *= Math.pow(MOMENTUM_FRICTION, dt / 16.6667);
       if (Math.abs(job.velocity) < MOMENTUM_STOP) {
         this.#job = null;

@@ -572,6 +572,35 @@ export class Multislider {
 
     const steps = Math.min(count, total);
     const head = headAt(metrics.slides, this.#engine.offset).index;
+
+    if (!this.#looping) {
+      // Clamped mode: no wrap arithmetic. Steps clamp to the hard edges,
+      // land silently when nothing can move, and events report what
+      // actually happened (a partial step can leave from === to).
+      const max = this.#maxOffset(metrics);
+      const dist = runDistance(metrics.slides, head, steps, direction);
+      const dest = Math.min(
+        Math.max(this.#engine.offset + direction * dist, 0),
+        max
+      );
+      const delta = dest - this.#engine.offset;
+      if (Math.abs(delta) < GUARD_EPS) return;
+      const target = headAt(metrics.slides, dest).index;
+      const detail: ChangeDetail = {
+        from: this.#logical(head),
+        to: this.#logical(target),
+        direction,
+        count: Math.abs(target - head),
+      };
+      if (!this.#emit("beforechange", detail, true)) return;
+      this.#resetAutoplay();
+      this.#engine.tween(delta, this.#duration(), () => {
+        this.#emit("afterchange", detail);
+        this.#syncLoop();
+      });
+      return;
+    }
+
     const target =
       direction === 1
         ? modIndex(head + steps, total)
@@ -588,6 +617,39 @@ export class Multislider {
     const distance = runDistance(metrics.slides, head, steps, direction);
     this.#resetAutoplay();
     this.#engine.tween(direction * distance, this.#duration(), () => {
+      this.#emit("afterchange", detail);
+      this.#syncLoop();
+    });
+  }
+
+  #maxOffset(metrics: Metrics): number {
+    return Math.max(0, metrics.contentSize - metrics.viewportSize);
+  }
+
+  #autoAdvance(): void {
+    const metrics = this.#engine.metrics;
+    if (!(metrics.contentSize > 0)) return; // hidden/zero content: silent
+    if (this.#looping) {
+      this.#advance(1);
+      return;
+    }
+    const max = this.#maxOffset(metrics);
+    if (max <= GUARD_EPS) return; // nothing can move: silent
+    if (this.#engine.offset >= max - GUARD_EPS) {
+      this.#rewind(metrics);
+      return;
+    }
+    this.#advance(1);
+  }
+
+  /** Clamped-mode autoplay at the far edge tweens back to the start. */
+  #rewind(metrics: Metrics): void {
+    const from = this.#logical(headAt(metrics.slides, this.#engine.offset).index);
+    const detail: ChangeDetail = { from, to: 0, direction: -1, count: from };
+    // A canceled rewind parks at the edge; the next tick retries.
+    if (!this.#emit("beforechange", detail, true)) return;
+    this.#resetAutoplay();
+    this.#engine.tween(-this.#engine.offset, this.#duration(), () => {
       this.#emit("afterchange", detail);
       this.#syncLoop();
     });
@@ -649,7 +711,7 @@ export class Multislider {
     if (this.#timer !== null || this.#options.interval <= 0) return;
     this.#timer = setInterval(() => {
       if (this.paused || this.#destroyed) return;
-      this.#advance(1);
+      this.#autoAdvance();
     }, this.#options.interval);
   }
 
@@ -799,7 +861,12 @@ export class Multislider {
       this.#syncLoop();
       return;
     }
-    const target = fraction < 0.5 ? slide.start : slide.start + slide.size;
+    let target = fraction < 0.5 ? slide.start : slide.start + slide.size;
+    if (!this.#looping) {
+      // Clamp the snap target so the tween's endpoint is never beyond the
+      // wall, where motion would pin early and idle out the duration.
+      target = Math.min(Math.max(target, 0), this.#maxOffset(metrics));
+    }
     this.#engine.tween(target - this.#engine.offset, this.#duration(), () =>
       this.#syncLoop()
     );

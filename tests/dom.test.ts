@@ -469,6 +469,72 @@ describe("loop guard", () => {
   });
 });
 
+describe("clamped mode", () => {
+  // 301 originals block even one clone set under the 600 element cap while
+  // content (6020) still exceeds the viewport (6010), so max offset is 10.
+  function clampedSetup(options = {}) {
+    useLayout({ viewport: 6010, sizes: Array(301).fill(20) });
+    const root = makeMarkup(301);
+    const instance = build(root, options);
+    return { root, instance, track: trackOf(root) };
+  }
+
+  it("steps clamp to the hard edge and go silent there", () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    const { root, instance, track } = clampedSetup();
+    const before = collect(root, "beforechange");
+
+    instance.next();
+    expect(track.style.transform).toBe("translate3d(-10px, 0, 0)");
+    expect(before).toHaveLength(1);
+    expect(before[0]!.detail as ChangeDetail).toMatchObject({
+      direction: 1,
+      count: 0, // partial step: no full index crossed
+    });
+
+    instance.next(); // pinned at the wall: no motion, no events
+    expect(track.style.transform).toBe("translate3d(-10px, 0, 0)");
+    expect(before).toHaveLength(1);
+
+    instance.prev();
+    expect(track.style.transform).toBe("translate3d(0px, 0, 0)");
+    instance.prev(); // pinned at the start
+    expect(before).toHaveLength(2);
+    expect(warn).toHaveBeenCalledTimes(1);
+  });
+
+  it("autoplay rewinds to the start at the far edge", () => {
+    vi.useFakeTimers();
+    try {
+      const { root, track } = clampedSetup({ interval: 100 });
+      const after = collect(root, "afterchange");
+
+      vi.advanceTimersByTime(100); // advances to the wall
+      expect(track.style.transform).toBe("translate3d(-10px, 0, 0)");
+
+      vi.advanceTimersByTime(100); // rewinds as a single backward transition
+      expect(track.style.transform).toBe("translate3d(0px, 0, 0)");
+      expect(after).toHaveLength(2);
+      expect((after[1]!.detail as ChangeDetail).direction).toBe(-1);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("stays silent when nothing can move at all", () => {
+    vi.spyOn(console, "warn").mockImplementation(() => {});
+    useLayout({ viewport: 8000, sizes: [10, 10, 10] });
+    const root = makeMarkup(3);
+    const instance = build(root);
+    const before = collect(root, "beforechange");
+
+    instance.next();
+    instance.prev();
+    expect(before).toHaveLength(0);
+    expect(trackOf(root).style.transform).toBe("translate3d(0px, 0, 0)");
+  });
+});
+
 describe("refresh and resize", () => {
   it("keeps the same slide leading after the geometry changes", () => {
     useLayout({ viewport: 300, sizes: FIVE });
