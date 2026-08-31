@@ -31,6 +31,7 @@ const TRACK_CLASS = "ms-track";
 const CLONE_ATTR = "data-ms-clone";
 const DRAG_THRESHOLD = 4; // px before a pointer gesture counts as a drag
 const CLICK_BLOCK_MS = 300;
+const STALE_MS = 80; // velocity older than this at release means the finger had stopped
 const MAX_SLIDE_ELEMENTS = 600; // cap on originals plus clones across all sets
 const MAX_GUARD_PASSES = 3;
 const GUARD_EPS = 0.5; // px: loop guard tolerance, edge detection, progress check
@@ -875,14 +876,22 @@ export class Multislider {
 
     if (!drag.moved) {
       this.#removeReason("drag");
+      // A press can land mid tween (pointerdown cancels it); settle the
+      // fractional offset instead of freezing until the next autoplay tick.
+      // On an aligned offset this is a zero-delta tween completing at once.
+      if (this.#mode === "step") this.#snap();
       return;
     }
 
     // A canceled pointer never produces a click, and its velocity reflects a
     // gesture the OS took over, so skip the blocker and settle without a fling.
     const canceled = event.type === "pointercancel";
+    // Velocity is sampled at the last pointermove. If the finger then held
+    // still, no moves fire, and releasing after STALE_MS must not fling with
+    // the speed of the earlier movement.
+    const stale = eventTime(event) - drag.lastTime > STALE_MS;
     if (!canceled) this.#blockNextClick();
-    this.#engine.startMomentum(canceled ? 0 : drag.velocity, () => {
+    this.#engine.startMomentum(canceled || stale ? 0 : drag.velocity, () => {
       if (this.#mode === "step") this.#snap();
       else this.#syncLoop();
     });

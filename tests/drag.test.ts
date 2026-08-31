@@ -177,6 +177,57 @@ describe("drag", () => {
     expect(track.style.transform).toBe("translate3d(-100px, 0, 0)");
   });
 
+  it("does not fling when the finger held still before release", () => {
+    const { track } = setup();
+    track.dispatchEvent(pointer("pointerdown", 200, 8));
+    window.dispatchEvent(pointer("pointermove", 120, 24)); // fast: velocity 5 px/ms
+    window.dispatchEvent(pointer("pointerup", 120, 224)); // 200ms hold: stale
+
+    // zero velocity resolves synchronously into the snap
+    expect(track.style.transform).toBe("translate3d(-100px, 0, 0)");
+    expect(raf.pending).toBe(0);
+  });
+
+  it("keeps the fling when the release follows the movement promptly", () => {
+    const { track } = setup();
+    track.dispatchEvent(pointer("pointerdown", 200, 8));
+    window.dispatchEvent(pointer("pointermove", 120, 24));
+    window.dispatchEvent(pointer("pointerup", 120, 40)); // 16ms gap: fresh
+
+    expect(track.style.transform).toBe("translate3d(-80px, 0, 0)");
+    raf.step(16); // seeds the momentum clock
+    raf.step(16);
+    expect(track.style.transform).toBe("translate3d(-160px, 0, 0)");
+  });
+
+  it("settles a tap that lands mid tween instead of freezing off-boundary", () => {
+    const { root, track } = setup({ duration: 300 });
+    let after = 0;
+    root.addEventListener("multislider:afterchange", () => {
+      after += 1;
+    });
+
+    slider!.next();
+    raf.step(16); // tween start
+    raf.step(150); // halfway: ease(0.5) = 0.5 of 100px
+    expect(track.style.transform).toBe("translate3d(-50px, 0, 0)");
+
+    track.dispatchEvent(pointer("pointerdown", 200, 400)); // cancels the tween
+    window.dispatchEvent(pointer("pointerup", 200, 416)); // tap, no movement
+
+    raf.step(16);
+    raf.step(300); // the settle snap completes forward
+    expect(track.style.transform).toBe("translate3d(-100px, 0, 0)");
+    // the superseded step fired no afterchange; the next full step does
+    expect(after).toBe(0);
+
+    slider!.next();
+    raf.step(16);
+    raf.step(300);
+    expect(track.style.transform).toBe("translate3d(-200px, 0, 0)");
+    expect(after).toBe(1);
+  });
+
   it("settles without momentum when the gesture is canceled", () => {
     const { track } = setup();
     track.dispatchEvent(pointer("pointerdown", 200, 0));

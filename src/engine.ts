@@ -146,6 +146,11 @@ export class Engine {
     this.#schedule();
   }
 
+  /**
+   * Drops any pending done callback by design; interrupting flows own
+   * re-establishing the event and autoplay state (steps self-realign to
+   * boundaries, so a dropped snap callback is harmless).
+   */
   cancel(): void {
     this.#job = null;
     if (this.#frame !== 0) {

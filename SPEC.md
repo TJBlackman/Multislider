@@ -71,7 +71,7 @@ Prev/next buttons do exactly what `prev()`/`next()` do when `advanceBy: "one"`, 
 Native `CustomEvent`s dispatched on the root element, bubbling:
 
 - `multislider:beforechange` — cancelable; `preventDefault()` blocks the step. `detail: { from, to, direction, count }` where `from`/`to` are logical head slide indices and `direction` is `1 | -1`.
-- `multislider:afterchange` — same detail, fired once per committed step (never per frame; marquee mode fires neither).
+- `multislider:afterchange` — same detail, fired once per step that completes (never per frame; marquee mode fires neither). A step superseded before completion, by a pointer grab, `setMode()`, or `destroy()`, fires no afterchange, so `beforechange` may fire without a matching afterchange. Rapid successive steps are unaffected: a new step commits the in-flight one first, firing its afterchange synchronously.
 - `multislider:pause` / `multislider:play` — `detail: { reasons: string[] }`, fired when the pause reason set becomes nonempty / empty.
 
 ## Engine architecture (binding)
