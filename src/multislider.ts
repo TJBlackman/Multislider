@@ -799,6 +799,13 @@ function resolveRtl(root: HTMLElement, direction: string): boolean {
   if (direction === "rtl") return true;
   if (direction === "ltr") return false;
   const view = root.ownerDocument.defaultView;
-  if (view && view.getComputedStyle(root).direction === "rtl") return true;
+  // Computed style is authoritative when it resolves: CSS direction can
+  // override an ancestor dir attribute. The attribute walk only covers
+  // environments that report neither value (detached documents, jsdom).
+  if (view) {
+    const computed = view.getComputedStyle(root).direction;
+    if (computed === "rtl") return true;
+    if (computed === "ltr") return false;
+  }
   return root.closest("[dir]")?.getAttribute("dir")?.toLowerCase() === "rtl";
 }
