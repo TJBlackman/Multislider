@@ -593,6 +593,8 @@ export class Multislider {
 
   #onKeyDown = (event: KeyboardEvent): void => {
     if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+    if (event.defaultPrevented) return;
+    if (event.ctrlKey || event.altKey || event.metaKey || event.shiftKey) return;
     const target = event.target;
     const allowed =
       target === this.#root ||
@@ -600,7 +602,8 @@ export class Multislider {
       target === this.#nextButton;
     if (!allowed) return;
     event.preventDefault();
-    this.#advance(event.key === "ArrowLeft" ? -1 : 1);
+    // The arrow points at the edge new content enters from; RTL flips that edge.
+    this.#advance((event.key === "ArrowRight") !== this.#rtl ? 1 : -1);
   };
 
   #onFocusIn = (event: FocusEvent): void => {

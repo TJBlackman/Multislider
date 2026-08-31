@@ -239,6 +239,60 @@ describe("stepping and events", () => {
     expect(trackOf(root).style.transform).toBe("translate3d(0px, 0, 0)");
   });
 
+  it("flips arrow keys in RTL so they follow visual direction", () => {
+    useLayout({ viewport: 300, sizes: FIVE, rtl: true });
+    const root = makeMarkup(5);
+    build(root, { direction: "rtl" });
+
+    // In RTL new content enters from the left, so ArrowLeft advances.
+    root.dispatchEvent(
+      new KeyboardEvent("keydown", { key: "ArrowLeft", bubbles: true })
+    );
+    expect(trackOf(root).style.transform).toBe("translate3d(100px, 0, 0)");
+    root.dispatchEvent(
+      new KeyboardEvent("keydown", { key: "ArrowRight", bubbles: true })
+    );
+    expect(trackOf(root).style.transform).toBe("translate3d(0px, 0, 0)");
+  });
+
+  it("ignores arrow keys with modifiers or an already handled event", () => {
+    useLayout({ viewport: 300, sizes: FIVE });
+    const root = makeMarkup(5);
+    build(root);
+
+    const withCtrl = new KeyboardEvent("keydown", {
+      key: "ArrowRight",
+      bubbles: true,
+      cancelable: true,
+      ctrlKey: true,
+    });
+    root.dispatchEvent(withCtrl);
+    expect(trackOf(root).style.transform).toBe("translate3d(0px, 0, 0)");
+    // the browser shortcut must not be swallowed either
+    expect(withCtrl.defaultPrevented).toBe(false);
+
+    const handled = new KeyboardEvent("keydown", {
+      key: "ArrowRight",
+      bubbles: true,
+      cancelable: true,
+    });
+    handled.preventDefault();
+    root.dispatchEvent(handled);
+    expect(trackOf(root).style.transform).toBe("translate3d(0px, 0, 0)");
+  });
+
+  it("ignores arrow keys when focus is inside a slide", () => {
+    useLayout({ viewport: 300, sizes: FIVE });
+    const root = makeMarkup(5);
+    build(root);
+    const slide = trackOf(root).children[0]!;
+
+    slide.dispatchEvent(
+      new KeyboardEvent("keydown", { key: "ArrowRight", bubbles: true })
+    );
+    expect(trackOf(root).style.transform).toBe("translate3d(0px, 0, 0)");
+  });
+
   it("steps while paused", () => {
     useLayout({ viewport: 300, sizes: FIVE });
     const root = makeMarkup(5);
