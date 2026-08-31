@@ -1,0 +1,683 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Multislider</title>
+    <meta
+      name="description"
+      content="Multislider is a responsive, dependency free, multi-slide slideshow. You control how many slides are visible with CSS."
+    />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="icon" href="/favicon.ico" />
+    <link rel="stylesheet" href="./src/styles.css" />
+  </head>
+  <body>
+    <svg class="sprite" aria-hidden="true" focusable="false" width="0" height="0">
+      <symbol id="chevron-left" viewBox="0 0 24 24">
+        <path
+          d="M15 4 7 12l8 8"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      </symbol>
+      <symbol id="chevron-right" viewBox="0 0 24 24">
+        <path
+          d="M9 4l8 8-8 8"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      </symbol>
+    </svg>
+
+    <a class="skip-link" href="#docs">Skip to docs</a>
+
+    <header class="hero">
+      <div class="wrap">
+        <p class="eyebrow">v2.0</p>
+        <h1>Multislider</h1>
+        <p class="tagline">A responsive, dependency free, multi-slide slideshow.</p>
+        <div class="install">
+          <code id="install-cmd">npm i @tjblackman/multislider</code>
+          <button type="button" class="copy" data-copy="#install-cmd">Copy</button>
+        </div>
+        <p class="hero-links">
+          <a class="btn" href="#docs">Read the docs</a>
+          <a class="btn btn-ghost" href="https://github.com/TJBlackman/Multislider">GitHub</a>
+        </p>
+      </div>
+    </header>
+
+    <main>
+      <!-- ================= TOP DEMOS ================= -->
+      <section class="wrap section" id="demos" aria-labelledby="demos-h">
+        <h2 id="demos-h">Live examples</h2>
+        <p class="lede">
+          All three sliders below use the same markup and the same CSS. Only the options differ.
+        </p>
+
+        <figure class="demo">
+          <figcaption>
+            <h3>One slide at a time</h3>
+            <code>{ interval: 2500 }</code>
+          </figcaption>
+          <div class="basic-slider" id="demo-step">
+            <div class="MS-content"></div>
+            <button type="button" data-ms="prev" aria-label="Previous slide">
+              <svg width="24" height="24" aria-hidden="true"><use href="#chevron-left" /></svg>
+            </button>
+            <button type="button" data-ms="next" aria-label="Next slide">
+              <svg width="24" height="24" aria-hidden="true"><use href="#chevron-right" /></svg>
+            </button>
+          </div>
+        </figure>
+
+        <figure class="demo">
+          <figcaption>
+            <h3>A full page at a time</h3>
+            <code>{ advanceBy: "page", interval: 3000, duration: 800 }</code>
+          </figcaption>
+          <div class="basic-slider" id="demo-page">
+            <div class="MS-content"></div>
+            <button type="button" data-ms="prev" aria-label="Previous slide">
+              <svg width="24" height="24" aria-hidden="true"><use href="#chevron-left" /></svg>
+            </button>
+            <button type="button" data-ms="next" aria-label="Next slide">
+              <svg width="24" height="24" aria-hidden="true"><use href="#chevron-right" /></svg>
+            </button>
+          </div>
+        </figure>
+
+        <figure class="demo">
+          <figcaption>
+            <h3>Marquee</h3>
+            <code>{ mode: "marquee", speed: 70 }</code>
+          </figcaption>
+          <div class="basic-slider" id="demo-marquee">
+            <div class="MS-content"></div>
+          </div>
+          <p class="note">Hover the marquee to pause it.</p>
+        </figure>
+      </section>
+
+      <!-- ================= DOCS ================= -->
+      <div class="wrap docs" id="docs">
+        <nav class="sidenav" aria-label="Documentation sections">
+          <ul>
+            <li><a href="#about">About</a></li>
+            <li><a href="#markup">Markup</a></li>
+            <li><a href="#css">CSS</a></li>
+            <li><a href="#usage">Usage</a></li>
+            <li><a href="#options">Options</a></li>
+            <li><a href="#methods">Methods</a></li>
+            <li><a href="#events">Events</a></li>
+            <li><a href="#accessibility">Accessibility</a></li>
+            <li><a href="#migrating">Migrating from v1</a></li>
+            <li><a href="#more-examples">More examples</a></li>
+          </ul>
+        </nav>
+
+        <div class="docs-body">
+          <!-- ABOUT -->
+          <section id="about">
+            <h2>About</h2>
+            <p>
+              Multislider shows more than one slide at a time. How many is up to your CSS. A slide
+              with <code>width: 20%</code> means five visible slides, and a media query at a smaller
+              breakpoint can drop that to two. The library never sets slide widths and has no
+              <code>slidesVisible</code> option.
+            </p>
+            <p>
+              It is TypeScript, has zero runtime dependencies, and ships as ESM plus one IIFE build
+              for script tag users. It supports modern evergreen browsers. Slides never get cloned
+              or reordered to fake a loop, so your DOM stays the shape you wrote it, with one
+              exception noted under
+              <a href="#markup">markup</a>.
+            </p>
+          </section>
+
+          <!-- MARKUP -->
+          <section id="markup">
+            <h2>Markup</h2>
+            <p>Four parts, three of which you have to supply.</p>
+
+            <table>
+              <thead>
+                <tr>
+                  <th>Part</th>
+                  <th>How it is found</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Root</td>
+                  <td>The element or selector you pass to the constructor. Events fire here.</td>
+                </tr>
+                <tr>
+                  <td>Viewport</td>
+                  <td>
+                    First descendant matching <code>[data-ms="viewport"]</code>,
+                    <code>.ms-viewport</code>, or <code>.MS-content</code>. The last one is the v1
+                    name and still works.
+                  </td>
+                </tr>
+                <tr>
+                  <td>Slides</td>
+                  <td>
+                    The element children of the viewport at init time. Any HTML you like inside
+                    them.
+                  </td>
+                </tr>
+                <tr>
+                  <td>Buttons</td>
+                  <td>
+                    Optional descendants matching <code>[data-ms="prev"]</code> /
+                    <code>[data-ms="next"]</code>, or the v1 names <code>.MS-left</code> /
+                    <code>.MS-right</code>.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <pre><code>&lt;div id="mySlider"&gt;
+  &lt;div class="MS-content"&gt;              &lt;!-- viewport --&gt;
+    &lt;div class="item"&gt;Slide 1&lt;/div&gt;    &lt;!-- slides --&gt;
+    &lt;div class="item"&gt;Slide 2&lt;/div&gt;
+    &lt;div class="item"&gt;Slide 3&lt;/div&gt;
+  &lt;/div&gt;
+  &lt;button type="button" data-ms="prev"&gt;Prev&lt;/button&gt;
+  &lt;button type="button" data-ms="next"&gt;Next&lt;/button&gt;
+&lt;/div&gt;</code></pre>
+
+            <p>
+              At init the library creates a <code>div.ms-track</code> inside the viewport and moves
+              the slides into it exactly once. <code>destroy()</code> puts the original DOM back.
+            </p>
+            <p>
+              Critical styles are set inline, so there is no stylesheet to import. The viewport gets
+              <code>overflow: hidden</code>. The track gets <code>display: flex</code>,
+              <code>width: 100%</code>, and <code>will-change: transform</code>. Slides get
+              <code>flex: 0 0 auto</code>. Percentage widths resolve against the track, whose width
+              matches the viewport content box, which is why v1 era CSS keeps working.
+            </p>
+            <p class="callout">
+              An endless loop needs enough content to cover the viewport plus the widest slide. If
+              your slides do not add up to that, the library duplicates the whole set once, marks
+              the copies <code>aria-hidden="true"</code> and <code>inert</code>, and carries on. If
+              even that is not enough, looping turns off, the slider clamps at the ends, and a
+              warning goes to the console. This is the only case where anything gets cloned.
+            </p>
+          </section>
+
+          <!-- CSS -->
+          <section id="css">
+            <h2>CSS</h2>
+            <p>
+              Slide count is a width percentage. Divide 100 by the number of slides you want to see.
+            </p>
+            <pre><code>.item { width: 50%; }      /* 2 slides */
+.item { width: 33.3333%; } /* 3 slides */
+.item { width: 25%; }      /* 4 slides */
+.item { width: 20%; }      /* 5 slides */</code></pre>
+
+            <p>Change the count per breakpoint with media queries.</p>
+            <pre><code>#mySlider .item {
+  width: 20%;
+}
+
+@media (max-width: 1200px) { #mySlider .item { width: 25%; } }
+@media (max-width: 992px)  { #mySlider .item { width: 33.3333%; } }
+@media (max-width: 768px)  { #mySlider .item { width: 50%; } }</code></pre>
+
+            <p>
+              After a breakpoint change the slider re-measures through a ResizeObserver and keeps
+              the same slide leading, so nothing jumps.
+            </p>
+            <p>
+              Padding, borders, and margins on a slide count toward its size, so gaps work however
+              you like to write them. Everything else, including the arrow buttons, is yours to
+              style.
+            </p>
+          </section>
+
+          <!-- USAGE -->
+          <section id="usage">
+            <h2>Usage</h2>
+            <h3>ESM</h3>
+            <pre><code>import { Multislider } from '@tjblackman/multislider';
+
+const slider = new Multislider('#mySlider', {
+  interval: 3000,
+  duration: 600,
+});</code></pre>
+
+            <h3>Script tag</h3>
+            <p>
+              The IIFE build puts the class on <code>window.Multislider</code>.
+            </p>
+            <pre><code>&lt;script src="/path/to/multislider.global.js"&gt;&lt;/script&gt;
+&lt;script&gt;
+  new Multislider('#mySlider', { mode: 'marquee', speed: 40 });
+&lt;/script&gt;</code></pre>
+
+            <p>
+              The constructor takes a selector string or an element. It throws if the target or its
+              viewport cannot be found, or if that element is already a slider. Many independent
+              instances on one page are fine.
+            </p>
+          </section>
+
+          <!-- OPTIONS -->
+          <section id="options">
+            <h2>Options</h2>
+            <p>Every option is optional. Defaults are below.</p>
+            <div class="table-scroll">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Option</th>
+                    <th>Type</th>
+                    <th>Default</th>
+                    <th>What it does</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><code>mode</code></td>
+                    <td><code>"step" | "marquee"</code></td>
+                    <td><code>"step"</code></td>
+                    <td>
+                      Stepped slideshow, or constant speed scrolling to the left forever with linear
+                      easing.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><code>advanceBy</code></td>
+                    <td><code>"one" | "page"</code></td>
+                    <td><code>"one"</code></td>
+                    <td>
+                      How far autoplay and the prev/next buttons move: one slide, or a full viewport
+                      worth.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><code>interval</code></td>
+                    <td><code>number</code></td>
+                    <td><code>2000</code></td>
+                    <td>Milliseconds between autoplay steps. <code>0</code> turns autoplay off.</td>
+                  </tr>
+                  <tr>
+                    <td><code>duration</code></td>
+                    <td><code>number</code></td>
+                    <td><code>500</code></td>
+                    <td>Milliseconds per step, ease in out cubic.</td>
+                  </tr>
+                  <tr>
+                    <td><code>speed</code></td>
+                    <td><code>number</code></td>
+                    <td><code>60</code></td>
+                    <td>Marquee speed in pixels per second.</td>
+                  </tr>
+                  <tr>
+                    <td><code>hoverPause</code></td>
+                    <td><code>boolean</code></td>
+                    <td><code>true</code></td>
+                    <td>
+                      Pause while the pointer is over the viewport. In marquee mode it stops mid
+                      animation and picks up where it left off.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><code>pauseAbove</code></td>
+                    <td><code>number | null</code></td>
+                    <td><code>null</code></td>
+                    <td>
+                      Pause when the viewport is wider than this many pixels. Uses
+                      <code>matchMedia</code>, not resize handlers.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><code>pauseBelow</code></td>
+                    <td><code>number | null</code></td>
+                    <td><code>null</code></td>
+                    <td>Same idea, for viewports narrower than this many pixels.</td>
+                  </tr>
+                  <tr>
+                    <td><code>draggable</code></td>
+                    <td><code>boolean</code></td>
+                    <td><code>true</code></td>
+                    <td>Pointer and touch dragging with momentum and a snap to the nearest slide.</td>
+                  </tr>
+                  <tr>
+                    <td><code>respectReducedMotion</code></td>
+                    <td><code>boolean</code></td>
+                    <td><code>true</code></td>
+                    <td>
+                      Under <code>prefers-reduced-motion: reduce</code>, step duration drops to 0,
+                      autoplay is off, and the marquee stays paused.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><code>direction</code></td>
+                    <td><code>"auto" | "ltr" | "rtl"</code></td>
+                    <td><code>"auto"</code></td>
+                    <td>
+                      <code>auto</code> reads the computed <code>direction</code> of the root. RTL
+                      flips every movement.
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <!-- METHODS -->
+          <section id="methods">
+            <h2>Methods</h2>
+            <div class="table-scroll">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Method</th>
+                    <th>What it does</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><code>next(count = 1)</code><br /><code>prev(count = 1)</code></td>
+                    <td>
+                      Step by <code>count</code> slides. Works on a paused slider, and resets the
+                      autoplay timer.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><code>nextPage()</code><br /><code>prevPage()</code></td>
+                    <td>
+                      Step by the shortest run of consecutive slides that covers the viewport.
+                      Correct even when slides have different widths.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><code>pause()</code><br /><code>play()</code></td>
+                    <td>
+                      Add and remove the <code>"api"</code> pause reason. <code>play()</code> will
+                      not start autoplay when <code>interval</code> is <code>0</code>.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><code>refresh()</code></td>
+                    <td>Re-measure slides and viewport. Call it after you change slide content.</td>
+                  </tr>
+                  <tr>
+                    <td><code>setMode(mode)</code></td>
+                    <td>Switch between <code>"step"</code> and <code>"marquee"</code> at runtime.</td>
+                  </tr>
+                  <tr>
+                    <td><code>destroy()</code></td>
+                    <td>
+                      Drop every listener, observer, and animation frame loop, remove injected DOM
+                      and styles, and restore the original markup. The instance is dead after this.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><code>paused</code></td>
+                    <td>Getter. <code>true</code> when any pause reason is active.</td>
+                  </tr>
+                  <tr>
+                    <td><code>element</code></td>
+                    <td>Getter. The root element.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p>
+              Prev and next buttons call <code>prev()</code> / <code>next()</code> when
+              <code>advanceBy</code> is <code>"one"</code>, and <code>prevPage()</code> /
+              <code>nextPage()</code> when it is <code>"page"</code>.
+            </p>
+            <p>
+              Pausing is a set of reasons, not a boolean. Hover, an off screen tab, a matched
+              <code>pauseAbove</code> query, a drag, reduced motion, and <code>pause()</code> each
+              add their own reason. Autoplay runs only when the set is empty, which is why hovering
+              a slider you already paused through the API does not accidentally resume it.
+            </p>
+          </section>
+
+          <!-- EVENTS -->
+          <section id="events">
+            <h2>Events</h2>
+            <p>
+              Native <code>CustomEvent</code>s, dispatched on the root element, bubbling.
+            </p>
+            <div class="table-scroll">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Event</th>
+                    <th>Detail</th>
+                    <th>Notes</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><code>multislider:beforechange</code></td>
+                    <td><code>{ from, to, direction, count }</code></td>
+                    <td>
+                      Cancelable. <code>preventDefault()</code> blocks the step.
+                      <code>from</code> and <code>to</code> are head slide indices,
+                      <code>direction</code> is <code>1</code> or <code>-1</code>.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><code>multislider:afterchange</code></td>
+                    <td><code>{ from, to, direction, count }</code></td>
+                    <td>Once per committed step, never per frame. Marquee mode fires neither.</td>
+                  </tr>
+                  <tr>
+                    <td><code>multislider:pause</code></td>
+                    <td><code>{ reasons: string[] }</code></td>
+                    <td>Fires when the reason set goes from empty to nonempty.</td>
+                  </tr>
+                  <tr>
+                    <td><code>multislider:play</code></td>
+                    <td><code>{ reasons: string[] }</code></td>
+                    <td>Fires when the last reason clears.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <pre><code>const el = document.querySelector('#mySlider');
+
+el.addEventListener('multislider:afterchange', (e) =&gt; {
+  console.log(e.detail.from, '-&gt;', e.detail.to);
+});
+
+el.addEventListener('multislider:beforechange', (e) =&gt; {
+  if (someCondition) e.preventDefault();
+});</code></pre>
+          </section>
+
+          <!-- ACCESSIBILITY -->
+          <section id="accessibility">
+            <h2>Accessibility</h2>
+            <ul class="checks">
+              <li>
+                The root gets <code>role="region"</code> and
+                <code>aria-roledescription="carousel"</code>. It also gets
+                <code>aria-label="slideshow"</code>, but only if you did not label it yourself.
+              </li>
+              <li>
+                Buttons with no accessible name get <code>aria-label="Previous slide"</code> or
+                <code>"Next slide"</code>. Give them your own label and the library leaves it alone.
+              </li>
+              <li>
+                Autoplay pauses on <code>focusin</code> anywhere inside the root and resumes on
+                <code>focusout</code>, the same as hover.
+              </li>
+              <li>
+                Tabbing to a link or button in a partly hidden slide jumps the track, with no tween,
+                so the focused slide is fully on screen.
+              </li>
+              <li>
+                ArrowLeft and ArrowRight step the slider when focus is on the root or on one of the
+                buttons.
+              </li>
+              <li>
+                <code>prefers-reduced-motion: reduce</code> sets step duration to 0, disables
+                autoplay, and holds the marquee still. Set
+                <code>respectReducedMotion: false</code> to opt out, though think hard before you
+                do.
+              </li>
+            </ul>
+          </section>
+
+          <!-- MIGRATING -->
+          <section id="migrating">
+            <h2>Migrating from v1</h2>
+            <p>
+              v1 was a jQuery plugin. v2 is a class. The markup you already have keeps working,
+              since the old <code>.MS-content</code>, <code>.MS-left</code>, and
+              <code>.MS-right</code> hooks are still recognized. The v1 source lives on the
+              <a href="https://github.com/TJBlackman/Multislider/tree/v1">v1 branch</a> and the
+              <code>v1.0.0</code> tag.
+            </p>
+            <div class="table-scroll">
+              <table>
+                <thead>
+                  <tr>
+                    <th>v1</th>
+                    <th>v2</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><code>$('#s').multislider({...})</code></td>
+                    <td><code>new Multislider('#s', {...})</code></td>
+                  </tr>
+                  <tr>
+                    <td><code>continuous: true</code></td>
+                    <td><code>mode: "marquee"</code></td>
+                  </tr>
+                  <tr>
+                    <td><code>slideAll: true</code></td>
+                    <td><code>advanceBy: "page"</code></td>
+                  </tr>
+                  <tr>
+                    <td><code>duration</code> as marquee speed</td>
+                    <td><code>speed</code> in pixels per second</td>
+                  </tr>
+                  <tr>
+                    <td><code>.multislider('pause' / 'unPause')</code></td>
+                    <td><code>.pause()</code> / <code>.play()</code></td>
+                  </tr>
+                  <tr>
+                    <td><code>.multislider('next' / 'prev')</code></td>
+                    <td><code>.next()</code> / <code>.prev()</code></td>
+                  </tr>
+                  <tr>
+                    <td><code>.multislider('nextAll' / 'prevAll')</code></td>
+                    <td><code>.nextPage()</code> / <code>.prevPage()</code></td>
+                  </tr>
+                  <tr>
+                    <td><code>.multislider('continuous')</code></td>
+                    <td><code>.setMode("marquee")</code></td>
+                  </tr>
+                  <tr>
+                    <td><code>ms.before.animate</code> / <code>ms.after.animate</code></td>
+                    <td>
+                      <code>multislider:beforechange</code> /
+                      <code>multislider:afterchange</code>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      Required CSS: <code>white-space: nowrap</code>,
+                      <code>display: inline-block</code>, and friends
+                    </td>
+                    <td>Gone. The library sets its own critical styles. You set slide widths.</td>
+                  </tr>
+                  <tr>
+                    <td>jQuery</td>
+                    <td>Gone.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+      </div>
+
+      <!-- ================= MORE EXAMPLES ================= -->
+      <section class="wrap section" id="more-examples" aria-labelledby="more-h">
+        <h2 id="more-h">More examples</h2>
+
+        <h3>Logo marquee</h3>
+        <p class="lede">
+          A slow marquee with no buttons. Good for partner logos, where the point is motion rather
+          than navigation.
+        </p>
+        <div class="logo-slider" id="demo-logos">
+          <div class="MS-content"></div>
+        </div>
+        <details class="code-details">
+          <summary>Show the code</summary>
+          <pre><code>new Multislider('#logos', {
+  mode: 'marquee',
+  speed: 35,
+  draggable: false,
+});</code></pre>
+        </details>
+
+        <h3>Card slider</h3>
+        <p class="lede">
+          Three cards on a wide screen, two on a tablet, one on a phone. Same options either way.
+        </p>
+        <div class="card-slider" id="demo-cards">
+          <div class="MS-content"></div>
+          <button type="button" data-ms="prev" aria-label="Previous post">
+            <svg width="28" height="28" aria-hidden="true"><use href="#chevron-left" /></svg>
+          </button>
+          <button type="button" data-ms="next" aria-label="Next post">
+            <svg width="28" height="28" aria-hidden="true"><use href="#chevron-right" /></svg>
+          </button>
+        </div>
+        <details class="code-details">
+          <summary>Show the code</summary>
+          <pre><code>new Multislider('#cards', {
+  interval: 4000,
+  duration: 700,
+});
+
+/* CSS */
+#cards .item { width: 33.3333%; }
+@media (max-width: 992px) { #cards .item { width: 50%; } }
+@media (max-width: 700px) { #cards .item { width: 100%; } }</code></pre>
+        </details>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="wrap">
+        <p>
+          MIT licensed. Built by
+          <a href="https://github.com/TJBlackman">Trevor Blackman</a>.
+        </p>
+        <p>
+          <a href="https://github.com/TJBlackman/Multislider">Source</a>
+          <a href="https://www.npmjs.com/package/@tjblackman/multislider">npm</a>
+          <a href="#">Back to top</a>
+        </p>
+      </div>
+    </footer>
+
+    <script type="module" src="./src/main.ts"></script>
+  </body>
+</html>

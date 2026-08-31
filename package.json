@@ -1,0 +1,59 @@
+{
+  "name": "@tjblackman/multislider",
+  "version": "2.0.0-beta.0",
+  "description": "A responsive, dependency free, multi-slide slideshow. Bring your own markup and CSS.",
+  "license": "MIT",
+  "author": "Trevor Blackman",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TJBlackman/Multislider.git"
+  },
+  "homepage": "https://multislider.trevorblackman.dev",
+  "keywords": [
+    "slider",
+    "carousel",
+    "slideshow",
+    "marquee",
+    "multislider",
+    "vanilla",
+    "typescript",
+    "zero-dependency"
+  ],
+  "type": "module",
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/multislider.global.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsup",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "dev": "vite site",
+    "site:build": "vite build site",
+    "site:preview": "vite preview site"
+  },
+  "devDependencies": {
+    "jsdom": "^30.0.1",
+    "tsup": "^8.5.1",
+    "typescript": "^7.0.2",
+    "vite": "^8.2.2",
+    "vitest": "^4.1.11"
+  },
+  "allowScripts": {
+    "esbuild@0.27.7": true
+  }
+}
