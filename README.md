@@ -14,6 +14,8 @@ two. The library never sets slide widths and has no `slidesVisible` option.
 
 Docs and live examples: [multislider.trevorblackman.dev](https://multislider.trevorblackman.dev)
 
+Package: [@tjblackman/multislider on npm](https://www.npmjs.com/package/@tjblackman/multislider)
+
 ## Install
 
 ```sh
